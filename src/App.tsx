@@ -597,7 +597,7 @@ const equipmentRows: Equipment[] = [
     id: 41,
     storeId: 101,
     type: 'Холодильник',
-    brand: 'Galanz',
+    brand: 'LG',
     serial: 'SN-903115',
     store: 'Green Line',
     status: 'Требует обслуживания',
@@ -608,7 +608,7 @@ const equipmentRows: Equipment[] = [
     id: 42,
     storeId: 102,
     type: 'Кега 30L',
-    brand: 'Shymkent',
+    brand: 'ШПЗ',
     serial: 'KEG-88210',
     store: 'Aray Market',
     status: 'Исправно',
@@ -619,7 +619,7 @@ const equipmentRows: Equipment[] = [
     id: 43,
     storeId: 104,
     type: 'Холодильник',
-    brand: 'Galanz',
+    brand: 'Samsung',
     serial: 'SN-812447',
     store: 'Tulpar Trade',
     status: 'Не найдено',
@@ -630,7 +630,7 @@ const equipmentRows: Equipment[] = [
     id: 44,
     storeId: 105,
     type: 'Кега 30L',
-    brand: 'Shymkent',
+    brand: 'ШПЗ',
     serial: 'KEG-910201',
     store: 'Meruyert Shop',
     status: 'Исправно',
@@ -711,7 +711,7 @@ const tasksSeed: Task[] = [
 const mmlTemplatesSeed: MmlTemplate[] = [
   {
     id: 1,
-    name: 'Юг — Modern Trade — Galanz',
+    name: 'Юг — Modern Trade',
     ownerRole: 'Супервайзер',
     ownerName: 'Нуржан Касымов',
     territoryType: 'Территория супервайзера',
@@ -729,7 +729,7 @@ const mmlTemplatesSeed: MmlTemplate[] = [
   },
   {
     id: 2,
-    name: 'Юг — Traditional Trade — ШПЗ',
+    name: 'Юг — Traditional Trade',
     ownerRole: 'Супервайзер',
     ownerName: 'Нуржан Касымов',
     territoryType: 'Территория супервайзера',
@@ -2075,7 +2075,7 @@ export default function CorporateSalesPlatformPrototype() {
                 >
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <InfoCard label="Супервайзер" value={SESSION.name} />
-                    <InfoCard label="Регион" value={SESSION.region} />
+                    {/* <InfoCard label="Регион" value={SESSION.region} /> */}
                     <div className="rounded-2xl bg-slate-50 p-4">
                       <div className="text-xs text-slate-500">
                         Торговый представитель
@@ -2089,12 +2089,12 @@ export default function CorporateSalesPlatformPrototype() {
                       >
                         {reps.map((r) => (
                           <option key={r.id} value={r.id}>
-                            {r.name} • {r.company}
+                            {r.name}
                           </option>
                         ))}
                       </select>
                     </div>
-                    <InfoCard label="Компания ТП" value={selectedRep.company} />
+                    {/* <InfoCard label="Компания ТП" value={selectedRep.company} /> */}
                   </div>
                   <div className="mt-4 rounded-2xl bg-blue-50 p-4 text-sm text-blue-900">
                     Супервайзер может назначать маршрут, менять состав точек,
@@ -2238,7 +2238,7 @@ export default function CorporateSalesPlatformPrototype() {
                         <th className="px-4 py-3 font-medium">Дата</th>
                         <th className="px-4 py-3 font-medium">ТП</th>
                         <th className="px-4 py-3 font-medium">ТТ</th>
-                        <th className="px-4 py-3 font-medium">Компания</th>
+                        {/* <th className="px-4 py-3 font-medium">Компания</th> */}
                         <th className="px-4 py-3 font-medium">Сумма</th>
                         <th className="px-4 py-3 font-medium">SKU</th>
                         <th className="px-4 py-3 font-medium">Units</th>
@@ -2258,7 +2258,7 @@ export default function CorporateSalesPlatformPrototype() {
                           <td className="px-4 py-3 font-medium text-slate-900">
                             {o.store}
                           </td>
-                          <td className="px-4 py-3">{o.company}</td>
+                          {/* <td className="px-4 py-3">{o.company}</td> */}
                           <td className="px-4 py-3 font-semibold text-slate-900">
                             {o.amount === 0 ? 'Нет заказа' : money(o.amount)}
                           </td>
@@ -2274,7 +2274,7 @@ export default function CorporateSalesPlatformPrototype() {
                   </table>
                 </TableShell>
               </SectionCard>
-              <Store360 storeId={selectedStoreId} />
+              {/* <Store360 storeId={selectedStoreId} /> */}
             </div>
           </Shell>
         )}
@@ -2312,13 +2312,13 @@ export default function CorporateSalesPlatformPrototype() {
                   tone="red"
                 />
               </div>
-              <SectionCard title="Реестр долгов команды">
+              <SectionCard title="Реестр долгов ТТ">
                 <TableShell>
                   <table className="w-full min-w-[980px] text-sm">
                     <thead>
                       <tr className="border-b border-slate-200 bg-slate-50 text-left text-slate-500">
                         <th className="px-4 py-3 font-medium">ТТ</th>
-                        <th className="px-4 py-3 font-medium">Компания</th>
+                        {/* <th className="px-4 py-3 font-medium">Компания</th> */}
                         <th className="px-4 py-3 font-medium">Договор</th>
                         <th className="px-4 py-3 font-medium">Общий долг</th>
                         <th className="px-4 py-3 font-medium">Просрочка</th>
@@ -2337,7 +2337,7 @@ export default function CorporateSalesPlatformPrototype() {
                           <td className="px-4 py-3 font-medium text-slate-900">
                             {d.store}
                           </td>
-                          <td className="px-4 py-3">{d.company}</td>
+                          {/* <td className="px-4 py-3">{d.company}</td> */}
                           <td className="px-4 py-3">{d.contract}</td>
                           <td className="px-4 py-3">{money(d.total)}</td>
                           <td className="px-4 py-3 font-semibold text-red-700">
@@ -2354,7 +2354,7 @@ export default function CorporateSalesPlatformPrototype() {
                   </table>
                 </TableShell>
               </SectionCard>
-              <Store360 storeId={selectedStoreId} />
+              {/* <Store360 storeId={selectedStoreId} /> */}
             </div>
           </Shell>
         )}
@@ -2406,7 +2406,7 @@ export default function CorporateSalesPlatformPrototype() {
                     <thead>
                       <tr className="border-b border-slate-200 bg-slate-50 text-left text-slate-500">
                         <th className="px-4 py-3 font-medium">ТТ</th>
-                        <th className="px-4 py-3 font-medium">Компания</th>
+                        {/* <th className="px-4 py-3 font-medium">Компания</th> */}
                         <th className="px-4 py-3 font-medium">MML</th>
                         <th className="px-4 py-3 font-medium">Фокус</th>
                         <th className="px-4 py-3 font-medium">Цена</th>
@@ -2425,7 +2425,7 @@ export default function CorporateSalesPlatformPrototype() {
                           <td className="px-4 py-3 font-medium text-slate-900">
                             {r.store}
                           </td>
-                          <td className="px-4 py-3">{r.company}</td>
+                          {/* <td className="px-4 py-3">{r.company}</td> */}
                           <td className="px-4 py-3">{r.mml}%</td>
                           <td className="px-4 py-3">{r.focus}%</td>
                           <td className="px-4 py-3">
@@ -2444,7 +2444,7 @@ export default function CorporateSalesPlatformPrototype() {
                   </table>
                 </TableShell>
               </SectionCard>
-              <Store360 storeId={selectedStoreId} />
+              {/* <Store360 storeId={selectedStoreId} /> */}
             </div>
           </Shell>
         )}
@@ -2524,7 +2524,7 @@ export default function CorporateSalesPlatformPrototype() {
                   </table>
                 </TableShell>
               </SectionCard>
-              <Store360 storeId={selectedStoreId} />
+              {/* <Store360 storeId={selectedStoreId} /> */}
             </div>
           </Shell>
         )}
@@ -2715,15 +2715,15 @@ export default function CorporateSalesPlatformPrototype() {
                       label="Владелец"
                       value={`${selectedMml.ownerRole} • ${selectedMml.ownerName}`}
                     />
-                    <InfoCard label="Компания" value={selectedMml.company} />
+                    {/* <InfoCard label="Компания" value={selectedMml.company} /> */}
                     <InfoCard
                       label="Тип территории"
                       value={selectedMml.territoryType}
                     />
-                    <InfoCard
+                    {/* <InfoCard
                       label="Территория"
                       value={selectedMml.territoryValue}
-                    />
+                    /> */}
                     <InfoCard label="Канал" value={selectedMml.channel} />
                     <InfoCard
                       label="SKU в шаблоне"
