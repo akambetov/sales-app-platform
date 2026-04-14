@@ -2326,11 +2326,11 @@ export default function CorporateSalesPlatformPrototype() {
                   value={`${Math.round(teamShelf.reduce((s, r) => s + r.focus, 0) / teamShelf.length)}%`}
                   tone="amber"
                 />
-                <KpiCard
+                {/* <KpiCard
                   title="Нарушения полки"
                   value={`${teamShelf.filter((r) => r.result === 'Проблема').length}`}
                   tone="red"
-                />
+                /> */}
                 <KpiCard
                   title="Риск по стандарту"
                   value={`${teamShelf.filter((r) => r.result === 'Риск').length}`}
