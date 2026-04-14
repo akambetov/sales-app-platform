@@ -779,7 +779,7 @@ const initialRoutePlan: RoutePlan = {
 
 const commandDistributorRows: CommandDistributorRow[] = [
   {
-    manager: 'Абдуллин Жантас Боранович',
+    manager: 'Руслан Ибраев',
     planQty: 385000,
     factQty: 198200,
     factToPlan: '51,48%',
@@ -788,10 +788,10 @@ const commandDistributorRows: CommandDistributorRow[] = [
     absDiffMtd: 54800,
     relativeDiffMtd: '138,21%',
     prevFactYtd: 480500,
-    factYtd: 590,
+    factYtd: 590000,
   },
   {
-    manager: 'Немчанинов Аскат Нуралиевич',
+    manager: 'Бекзат Сарсенов',
     planQty: 416000,
     factQty: 189850,
     factToPlan: '45,64%',
@@ -800,7 +800,7 @@ const commandDistributorRows: CommandDistributorRow[] = [
     absDiffMtd: 80500,
     relativeDiffMtd: '173,62%',
     prevFactYtd: 552100,
-    factYtd: 633,
+    factYtd: 633000,
   },
   {
     manager: 'Ню Виталий Олегович',
@@ -812,10 +812,10 @@ const commandDistributorRows: CommandDistributorRow[] = [
     absDiffMtd: 144050,
     relativeDiffMtd: '306,82%',
     prevFactYtd: 527300,
-    factYtd: 992,
+    factYtd: 992000,
   },
   {
-    manager: 'Расупов Камал Ризаметович',
+    manager: 'Азамат Утегенов',
     planQty: 1252000,
     factQty: 657000,
     factToPlan: '52,48%',
@@ -824,7 +824,7 @@ const commandDistributorRows: CommandDistributorRow[] = [
     absDiffMtd: 242350,
     relativeDiffMtd: '158,45%',
     prevFactYtd: 1262750,
-    factYtd: 1599,
+    factYtd: 1599000,
   },
   {
     manager: 'Итого',
@@ -836,7 +836,7 @@ const commandDistributorRows: CommandDistributorRow[] = [
     absDiffMtd: 521700,
     relativeDiffMtd: '170,78%',
     prevFactYtd: 2822650,
-    factYtd: 3816,
+    factYtd: 3816000,
   },
 ];
 
@@ -1545,17 +1545,17 @@ export default function CorporateSalesPlatformPrototype() {
       go: 'execution' as PageId,
     },
     {
-      title: `Просроченная дебиторка ${money(kpis.overdue)}`,
+      title: `Дебиторская задолженность ${money(kpis.overdue)}`,
       desc: 'Есть риск зависания денег по ТТ команды',
       go: 'debts' as PageId,
     },
+    // {
+    //   title: `${kpis.shelfProblems} точки с нарушением полки`,
+    //   desc: 'Нарушения MML, цен и стандартов',
+    //   go: 'shelf' as PageId,
+    // },
     {
-      title: `${kpis.shelfProblems} точки с нарушением полки`,
-      desc: 'Нарушения MML, цен и стандартов',
-      go: 'shelf' as PageId,
-    },
-    {
-      title: `${kpis.equipmentProblems} проблемы по оборудованию`,
+      title: `63 оборудования требующие ТО`,
       desc: 'Не найдено или требуется обслуживание',
       go: 'equipment' as PageId,
     },
@@ -1673,28 +1673,54 @@ export default function CorporateSalesPlatformPrototype() {
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <KpiCard
-                  title="Продажи команды"
-                  value={money(kpis.sales)}
+                  title="План продаж за месяц"
+                  value={money(2500000)}
                   tone="green"
-                  note="Только по закрепленным ТП"
+                  note="Торговой команды"
                 />
                 <KpiCard
-                  title="Визиты без заказа"
-                  value={`${kpis.visitsWithoutOrder}`}
+                  title="Фактические продажи за месяц"
+                  value={money(1258750)}
                   tone="red"
-                  note="Требуют немедленной реакции"
+                  note="Торговой команды"
                 />
                 <KpiCard
-                  title="Просроченная дебиторка"
+                  title="Дебиторская задолженность за месяц"
                   value={money(kpis.overdue)}
                   tone="red"
                   note="Финансовый риск по зоне ответственности"
                 />
                 <KpiCard
-                  title="Открытые задачи"
+                  title="Оборудования требующие ТО"
+                  value="63"
+                  tone="amber"
+                  note="Требуется визит техника"
+                />
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <KpiCard
+                  title="Количество оборудований"
+                  value="119"
+                  tone="green"
+                  note="В зоне покрытия"
+                />
+                <KpiCard
+                  title="Покрытие"
+                  value="128"
+                  tone="red"
+                  note="Общее количество ТТ"
+                />
+                <KpiCard
+                  title="Визиты без заказа"
+                  value={`${kpis.visitsWithoutOrder}`}
+                  tone="red"
+                  note="Финансовый риск по зоне ответственности"
+                />
+                <KpiCard
+                  title="Непосещенные ТТ"
                   value={`${kpis.openTasks}`}
                   tone="amber"
-                  note="Должны закрываться супервайзером"
+                  note="Требуется визит ТП"
                 />
               </div>
 
@@ -1759,7 +1785,7 @@ export default function CorporateSalesPlatformPrototype() {
               </div>
 
               <SectionCard
-                title="Дистрибьюторы и основные менеджеры"
+                title="Торговые представители"
                 subtitle="Сводка по плану, факту и динамике"
               >
                 <TableShell>
@@ -1767,14 +1793,14 @@ export default function CorporateSalesPlatformPrototype() {
                     <thead>
                       <tr className="border-b border-slate-200 bg-slate-50 text-left text-slate-500">
                         <th className="px-4 py-3 font-medium">
-                          Основной менеджер
+                          Торговый представитель
                         </th>
                         <th className="px-4 py-3 font-medium">Кол-во план</th>
                         <th className="px-4 py-3 font-medium">Кол-во факт</th>
                         <th className="px-4 py-3 font-medium">План / факт</th>
                         <th className="px-4 py-3 font-medium">НИ</th>
                         <th className="px-4 py-3 font-medium">
-                          Колөво факт пред.
+                          Кол-во факт пред.
                         </th>
                         <th className="px-4 py-3 font-medium">
                           Абс. разн. MTD
@@ -1783,7 +1809,7 @@ export default function CorporateSalesPlatformPrototype() {
                           Отн. разн. MTD
                         </th>
                         <th className="px-4 py-3 font-medium">
-                          Колөво факт год пред.
+                          Кол-во факт год пред.
                         </th>
                         <th className="px-4 py-3 font-medium">
                           Кол-во факт год
@@ -1840,7 +1866,7 @@ export default function CorporateSalesPlatformPrototype() {
                   <table className="w-full min-w-[980px] text-sm">
                     <thead>
                       <tr className="border-b border-slate-200 bg-slate-50 text-left text-slate-500">
-                        <th className="px-4 py-3 font-medium">Компания</th>
+                        {/* <th className="px-4 py-3 font-medium">Компания</th> */}
                         <th className="px-4 py-3 font-medium">ТТ</th>
                         <th className="px-4 py-3 font-medium">Проблема</th>
                         <th className="px-4 py-3 font-medium">MML</th>
@@ -1867,7 +1893,7 @@ export default function CorporateSalesPlatformPrototype() {
                               key={s.id}
                               className="border-b border-slate-100 hover:bg-slate-50"
                             >
-                              <td className="px-4 py-3">{s.company}</td>
+                              {/* <td className="px-4 py-3">{s.company}</td> */}
                               <td className="px-4 py-3 font-medium text-slate-900">
                                 {s.name}
                               </td>
@@ -1901,7 +1927,7 @@ export default function CorporateSalesPlatformPrototype() {
                 </TableShell>
               </SectionCard>
 
-              <Store360 storeId={selectedStoreId} />
+              {/* <Store360 storeId={selectedStoreId} /> */}
             </div>
           </Shell>
         )}
