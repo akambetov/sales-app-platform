@@ -995,29 +995,29 @@ function InfoCard({
   );
 }
 
-function Line({
-  label,
-  value,
-  danger,
-}: {
-  label: string;
-  value: string;
-  danger?: boolean;
-}) {
-  return (
-    <div className="rounded-2xl bg-slate-50 p-3">
-      <div className="text-[11px] text-slate-500">{label}</div>
-      <div
-        className={cls(
-          'mt-1 text-sm font-semibold',
-          danger ? 'text-red-700' : 'text-slate-900',
-        )}
-      >
-        {value}
-      </div>
-    </div>
-  );
-}
+// function Line({
+//   label,
+//   value,
+//   danger,
+// }: {
+//   label: string;
+//   value: string;
+//   danger?: boolean;
+// }) {
+//   return (
+//     <div className="rounded-2xl bg-slate-50 p-3">
+//       <div className="text-[11px] text-slate-500">{label}</div>
+//       <div
+//         className={cls(
+//           'mt-1 text-sm font-semibold',
+//           danger ? 'text-red-700' : 'text-slate-900',
+//         )}
+//       >
+//         {value}
+//       </div>
+//     </div>
+//   );
+// }
 
 function MiniBar({
   label,
@@ -1500,7 +1500,7 @@ export default function CorporateSalesPlatformPrototype() {
   const [page, setPage] = useState<PageId>('command');
   const [selectedVisitId, setSelectedVisitId] = useState<number | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
-  const [selectedStoreId, setSelectedStoreId] = useState<number>(101);
+  const [, setSelectedStoreId] = useState<number>(101);
   const [selectedRepId, setSelectedRepId] = useState<number>(3);
   const [selectedMmlId, setSelectedMmlId] = useState<number>(1);
   const [routePlan, setRoutePlan] = useState<RoutePlan>(initialRoutePlan);
