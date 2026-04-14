@@ -52,7 +52,7 @@ const NAV_ITEMS = [
 ] as const;
 
 type PageId = (typeof NAV_ITEMS)[number]['id'];
-const WEEK_DAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт'] as const;
+const WEEK_DAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вск'] as const;
 
 type Rep = {
   id: number;
