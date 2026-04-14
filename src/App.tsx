@@ -170,6 +170,18 @@ type MmlTemplate = {
 };
 
 type RoutePlan = Record<number, Record<(typeof WEEK_DAYS)[number], number[]>>;
+type CommandDistributorRow = {
+  manager: string;
+  planQty: number;
+  factQty: number;
+  factToPlan: string;
+  niPlanFact: string;
+  prevFactMtd: number;
+  absDiffMtd: number;
+  relativeDiffMtd: string;
+  prevFactYtd: number;
+  factYtd: number;
+};
 
 const reps: Rep[] = [
   {
@@ -741,8 +753,75 @@ const initialRoutePlan: RoutePlan = {
   5: { Пн: [103, 106], Вт: [106], Ср: [103], Чт: [106, 103], Пт: [106] },
 };
 
+const commandDistributorRows: CommandDistributorRow[] = [
+  {
+    manager: 'Абдуллин Жантас Боранович',
+    planQty: 385000,
+    factQty: 198200,
+    factToPlan: '51,48%',
+    niPlanFact: '118,8%',
+    prevFactMtd: 143400,
+    absDiffMtd: 54800,
+    relativeDiffMtd: '138,21%',
+    prevFactYtd: 480500,
+    factYtd: 590,
+  },
+  {
+    manager: 'Немчанинов Аскат Нуралиевич',
+    planQty: 416000,
+    factQty: 189850,
+    factToPlan: '45,64%',
+    niPlanFact: '105,32%',
+    prevFactMtd: 109350,
+    absDiffMtd: 80500,
+    relativeDiffMtd: '173,62%',
+    prevFactYtd: 552100,
+    factYtd: 633,
+  },
+  {
+    manager: 'Ню Виталий Олегович',
+    planQty: 447000,
+    factQty: 213700,
+    factToPlan: '47,81%',
+    niPlanFact: '110,33%',
+    prevFactMtd: 69650,
+    absDiffMtd: 144050,
+    relativeDiffMtd: '306,82%',
+    prevFactYtd: 527300,
+    factYtd: 992,
+  },
+  {
+    manager: 'Расупов Камал Ризаметович',
+    planQty: 1252000,
+    factQty: 657000,
+    factToPlan: '52,48%',
+    niPlanFact: '121,1%',
+    prevFactMtd: 414650,
+    absDiffMtd: 242350,
+    relativeDiffMtd: '158,45%',
+    prevFactYtd: 1262750,
+    factYtd: 1599,
+  },
+  {
+    manager: 'Итого',
+    planQty: 2500000,
+    factQty: 1258750,
+    factToPlan: '50,35%',
+    niPlanFact: '116,19%',
+    prevFactMtd: 737050,
+    absDiffMtd: 521700,
+    relativeDiffMtd: '170,78%',
+    prevFactYtd: 2822650,
+    factYtd: 3816,
+  },
+];
+
 function money(v: number) {
   return `${new Intl.NumberFormat('ru-RU').format(v)} тг`;
+}
+
+function quantity(v: number) {
+  return new Intl.NumberFormat('ru-RU').format(v);
 }
 
 function toneByText(text: string) {
@@ -1654,6 +1733,80 @@ export default function CorporateSalesPlatformPrototype() {
                   </div>
                 </SectionCard>
               </div>
+
+              <SectionCard
+                title="Дистрибьюторы и основные менеджеры"
+                subtitle="Сводка по плану, факту и динамике"
+              >
+                <TableShell>
+                  <table className="w-full min-w-[1480px] text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200 bg-slate-50 text-left text-slate-500">
+                        <th className="px-4 py-3 font-medium">
+                          Основной менеджер
+                        </th>
+                        <th className="px-4 py-3 font-medium">Кол-во план</th>
+                        <th className="px-4 py-3 font-medium">Кол-во факт</th>
+                        <th className="px-4 py-3 font-medium">План / факт</th>
+                        <th className="px-4 py-3 font-medium">НИ</th>
+                        <th className="px-4 py-3 font-medium">
+                          Колөво факт пред.
+                        </th>
+                        <th className="px-4 py-3 font-medium">
+                          Абс. разн. MTD
+                        </th>
+                        <th className="px-4 py-3 font-medium">
+                          Отн. разн. MTD
+                        </th>
+                        <th className="px-4 py-3 font-medium">
+                          Колөво факт год пред.
+                        </th>
+                        <th className="px-4 py-3 font-medium">
+                          Кол-во факт год
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {commandDistributorRows.map((row) => {
+                        const isTotal = row.manager === 'Итого';
+                        return (
+                          <tr
+                            key={row.manager}
+                            className={
+                              isTotal
+                                ? 'border-b border-slate-200 bg-slate-100 font-semibold text-slate-900'
+                                : 'border-b border-slate-100 hover:bg-slate-50'
+                            }
+                          >
+                            <td className="px-4 py-3">{row.manager}</td>
+                            <td className="px-4 py-3">
+                              {quantity(row.planQty)}
+                            </td>
+                            <td className="px-4 py-3">
+                              {quantity(row.factQty)}
+                            </td>
+                            <td className="px-4 py-3">{row.factToPlan}</td>
+                            <td className="px-4 py-3">{row.niPlanFact}</td>
+                            <td className="px-4 py-3">
+                              {quantity(row.prevFactMtd)}
+                            </td>
+                            <td className="px-4 py-3">
+                              {quantity(row.absDiffMtd)}
+                            </td>
+                            <td className="px-4 py-3">{row.relativeDiffMtd}</td>
+                            <td className="px-4 py-3">
+                              {quantity(row.prevFactYtd)}
+                            </td>
+                            <td className="px-4 py-3">
+                              {quantity(row.factYtd)}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </TableShell>
+              </SectionCard>
 
               <SectionCard
                 title="Точки внимания"
