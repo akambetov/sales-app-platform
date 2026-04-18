@@ -2954,14 +2954,14 @@ export default function CorporateSalesPlatformPrototype() {
                       value={`${selectedMml.ownerRole} • ${selectedMml.ownerName}`}
                     />
                     {/* <InfoCard label="Компания" value={selectedMml.company} /> */}
-                    <InfoCard
+                    {/* <InfoCard
                       label="Тип территории"
                       value={selectedMml.territoryType}
-                    />
-                    {/* <InfoCard
+                    /> */}
+                    <InfoCard
                       label="Территория"
                       value={selectedMml.territoryValue}
-                    /> */}
+                    />
                     <InfoCard label="Канал" value={selectedMml.channel} />
                     <InfoCard
                       label="SKU в шаблоне"
