@@ -62,7 +62,7 @@ export default function Modal({
         aria-modal="true"
         aria-label={typeof title === 'string' ? title : 'Modal'}
         className={cls(
-          'relative z-10 w-full max-w-2xl rounded-4xl border border-slate-200 bg-white shadow-2xl',
+          'relative z-10 rounded-4xl border border-slate-200 bg-white shadow-2xl',
           className,
         )}
       >

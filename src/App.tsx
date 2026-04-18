@@ -18,7 +18,6 @@ import {
   Building2,
   MapPinned,
   Users,
-  X,
   Pencil,
   Save,
 } from 'lucide-react';
@@ -1006,29 +1005,29 @@ function InfoCard({
   );
 }
 
-// function Line({
-//   label,
-//   value,
-//   danger,
-// }: {
-//   label: string;
-//   value: string;
-//   danger?: boolean;
-// }) {
-//   return (
-//     <div className="rounded-2xl bg-slate-50 p-3">
-//       <div className="text-[11px] text-slate-500">{label}</div>
-//       <div
-//         className={cls(
-//           'mt-1 text-sm font-semibold',
-//           danger ? 'text-red-700' : 'text-slate-900',
-//         )}
-//       >
-//         {value}
-//       </div>
-//     </div>
-//   );
-// }
+function Line({
+  label,
+  value,
+  danger,
+}: {
+  label: string;
+  value: string;
+  danger?: boolean;
+}) {
+  return (
+    <div className="rounded-2xl bg-slate-50 p-3">
+      <div className="text-[11px] text-slate-500">{label}</div>
+      <div
+        className={cls(
+          'mt-1 text-sm font-semibold',
+          danger ? 'text-red-700' : 'text-slate-900',
+        )}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
 
 function MiniBar({
   label,
@@ -1389,148 +1388,162 @@ function CreateTaskModal({
   );
 }
 
-// function Store360({ storeId }: { storeId: number }) {
-//   const store = stores.find((s) => s.id === storeId) || stores[0];
-//   const rep = reps.find((r) => r.id === store.repId);
-//   const storeVisits = visits.filter((v) => v.storeId === store.id);
-//   const storeDebt = debts.find((d) => d.storeId === store.id);
-//   const storeShelf = shelfRows.find((s) => s.storeId === store.id);
-//   const storeEquipment = equipmentRows.filter((e) => e.storeId === store.id);
-//   return (
-//     <div className="space-y-4">
-//       <SectionCard
-//         title={`Карточка ТТ • ${store.name}`}
-//         subtitle="Единая сводка по точке: продажи, долги, полка, оборудование, визиты"
-//       >
-//         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-//           <InfoCard label="Компания" value={store.company} />
-//           <InfoCard label="Канал" value={store.channel} />
-//           <InfoCard label="Договор" value={store.contract} />
-//           <InfoCard label="Ответственный ТП" value={rep ? rep.name : '—'} />
-//           <InfoCard label="Адрес" value={store.address} />
-//           <InfoCard
-//             label="Текущий долг"
-//             value={money(store.debt)}
-//             danger={store.debt > 0}
-//           />
-//           <InfoCard
-//             label="MML"
-//             value={`${store.mml}%`}
-//             danger={store.mml < 80}
-//           />
-//           <InfoCard
-//             label="Последний заказ"
-//             value={
-//               store.lastOrder === 0 ? 'Нет заказа' : money(store.lastOrder)
-//             }
-//             danger={store.lastOrder === 0}
-//           />
-//         </div>
-//       </SectionCard>
-//       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-//         <SectionCard title="Последние визиты">
-//           <div className="space-y-3">
-//             {storeVisits.map((v) => (
-//               <div key={v.id} className="rounded-2xl bg-slate-50 p-4">
-//                 <div className="flex items-start justify-between gap-3">
-//                   <div>
-//                     <div className="text-sm font-semibold text-slate-900">
-//                       {v.date}
-//                     </div>
-//                     <div className="mt-1 text-xs text-slate-500">
-//                       {v.rep} • {v.gps}
-//                     </div>
-//                   </div>
-//                   <RowStatus text={v.orderExists ? 'OK' : 'Проблема'} />
-//                 </div>
-//                 <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
-//                   <Line
-//                     label="Заказ"
-//                     value={v.orderExists ? money(v.amount) : 'Нет заказа'}
-//                     danger={!v.orderExists}
-//                   />
-//                   <Line
-//                     label="Инвентаризация"
-//                     value={v.inventory ? 'Выполнена' : 'Нет'}
-//                     danger={!v.inventory}
-//                   />
-//                 </div>
-//                 <div className="mt-3 rounded-2xl bg-white px-3 py-2.5 text-xs text-slate-600">
-//                   Отклонение: {v.issue}
-//                 </div>
-//               </div>
-//             ))}
-//           </div>
-//         </SectionCard>
-//         <SectionCard title="Полка, долг и оборудование">
-//           <div className="space-y-3">
-//             <div className="rounded-2xl bg-slate-50 p-4">
-//               <div className="text-sm font-semibold text-slate-900">
-//                 Полка и стандарты
-//               </div>
-//               <div className="mt-3 flex flex-wrap gap-2">
-//                 <Badge
-//                   text={`MML ${storeShelf ? storeShelf.mml : 0}%`}
-//                   tone={storeShelf && storeShelf.mml < 80 ? 'red' : 'green'}
-//                 />
-//                 <Badge
-//                   text={`Фокус ${storeShelf ? storeShelf.focus : 0}%`}
-//                   tone={storeShelf && storeShelf.focus < 70 ? 'amber' : 'green'}
-//                 />
-//                 <Badge
-//                   text={storeShelf ? storeShelf.standard : 'OK'}
-//                   tone={
-//                     storeShelf && storeShelf.standard === 'OK' ? 'green' : 'red'
-//                   }
-//                 />
-//                 <Badge
-//                   text={`Фото: ${storeShelf ? storeShelf.photo : 'Нет'}`}
-//                   tone={
-//                     storeShelf && storeShelf.photo === 'Нет' ? 'red' : 'blue'
-//                   }
-//                 />
-//               </div>
-//             </div>
-//             <div className="rounded-2xl bg-slate-50 p-4">
-//               <div className="text-sm font-semibold text-slate-900">
-//                 Дебиторка
-//               </div>
-//               <div className="mt-2 text-sm text-slate-700">
-//                 {storeDebt
-//                   ? `${money(storeDebt.total)} • Просрочка ${money(storeDebt.overdue)} • Накладных ${storeDebt.invoices}`
-//                   : 'Долга нет'}
-//               </div>
-//             </div>
-//             <div className="rounded-2xl bg-slate-50 p-4">
-//               <div className="text-sm font-semibold text-slate-900">
-//                 Оборудование
-//               </div>
-//               <div className="mt-2 space-y-2">
-//                 {storeEquipment.length === 0 ? (
-//                   <div className="text-sm text-slate-500">
-//                     Оборудование не закреплено
-//                   </div>
-//                 ) : (
-//                   storeEquipment.map((e) => (
-//                     <div
-//                       key={e.id}
-//                       className="flex items-center justify-between gap-3 rounded-2xl bg-white px-3 py-2.5"
-//                     >
-//                       <div className="text-sm text-slate-700">
-//                         {e.type} • {e.serial}
-//                       </div>
-//                       <RowStatus text={e.status} />
-//                     </div>
-//                   ))
-//                 )}
-//               </div>
-//             </div>
-//           </div>
-//         </SectionCard>
-//       </div>
-//     </div>
-//   );
-// }
+function Store360Modal({
+  open,
+  storeId,
+  onClose,
+}: {
+  open: boolean;
+  storeId: number | null;
+  onClose: () => void;
+}) {
+  const store = stores.find((s) => s.id === storeId) || stores[0];
+  const rep = reps.find((r) => r.id === store.repId);
+  const storeVisits = visits.filter((v) => v.storeId === store.id);
+  const storeDebt = debts.find((d) => d.storeId === store.id);
+  const storeShelf = shelfRows.find((s) => s.storeId === store.id);
+  const storeEquipment = equipmentRows.filter((e) => e.storeId === store.id);
+  return (
+    <Modal open={open} onClose={onClose}>
+      <div className="space-y-4">
+        <SectionCard
+          title={`Карточка ТТ • ${store.name}`}
+          subtitle="Единая сводка по точке: продажи, долги, полка, оборудование, визиты"
+        >
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <InfoCard label="Компания" value={store.company} />
+            <InfoCard label="Канал" value={store.channel} />
+            <InfoCard label="Договор" value={store.contract} />
+            <InfoCard label="Ответственный ТП" value={rep ? rep.name : '—'} />
+            <InfoCard label="Адрес" value={store.address} />
+            <InfoCard
+              label="Текущий долг"
+              value={money(store.debt)}
+              danger={store.debt > 0}
+            />
+            <InfoCard
+              label="MML"
+              value={`${store.mml}%`}
+              danger={store.mml < 80}
+            />
+            <InfoCard
+              label="Последний заказ"
+              value={
+                store.lastOrder === 0 ? 'Нет заказа' : money(store.lastOrder)
+              }
+              danger={store.lastOrder === 0}
+            />
+          </div>
+        </SectionCard>
+        <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+          <SectionCard title="Последние визиты">
+            <div className="space-y-3">
+              {storeVisits.map((v) => (
+                <div key={v.id} className="rounded-2xl bg-slate-50 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="text-sm font-semibold text-slate-900">
+                        {v.date}
+                      </div>
+                      <div className="mt-1 text-xs text-slate-500">
+                        {v.rep} • {v.gps}
+                      </div>
+                    </div>
+                    <RowStatus text={v.orderExists ? 'OK' : 'Проблема'} />
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+                    <Line
+                      label="Заказ"
+                      value={v.orderExists ? money(v.amount) : 'Нет заказа'}
+                      danger={!v.orderExists}
+                    />
+                    <Line
+                      label="Инвентаризация"
+                      value={v.inventory ? 'Выполнена' : 'Нет'}
+                      danger={!v.inventory}
+                    />
+                  </div>
+                  <div className="mt-3 rounded-2xl bg-white px-3 py-2.5 text-xs text-slate-600">
+                    Отклонение: {v.issue}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+          <SectionCard title="Полка, долг и оборудование">
+            <div className="space-y-3">
+              <div className="rounded-2xl bg-slate-50 p-4">
+                <div className="text-sm font-semibold text-slate-900">
+                  Полка и стандарты
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Badge
+                    text={`MML ${storeShelf ? storeShelf.mml : 0}%`}
+                    tone={storeShelf && storeShelf.mml < 80 ? 'red' : 'green'}
+                  />
+                  <Badge
+                    text={`Фокус ${storeShelf ? storeShelf.focus : 0}%`}
+                    tone={
+                      storeShelf && storeShelf.focus < 70 ? 'amber' : 'green'
+                    }
+                  />
+                  <Badge
+                    text={storeShelf ? storeShelf.standard : 'OK'}
+                    tone={
+                      storeShelf && storeShelf.standard === 'OK'
+                        ? 'green'
+                        : 'red'
+                    }
+                  />
+                  <Badge
+                    text={`Фото: ${storeShelf ? storeShelf.photo : 'Нет'}`}
+                    tone={
+                      storeShelf && storeShelf.photo === 'Нет' ? 'red' : 'blue'
+                    }
+                  />
+                </div>
+              </div>
+              <div className="rounded-2xl bg-slate-50 p-4">
+                <div className="text-sm font-semibold text-slate-900">
+                  Дебиторка
+                </div>
+                <div className="mt-2 text-sm text-slate-700">
+                  {storeDebt
+                    ? `${money(storeDebt.total)} • Просрочка ${money(storeDebt.overdue)} • Накладных ${storeDebt.invoices}`
+                    : 'Долга нет'}
+                </div>
+              </div>
+              <div className="rounded-2xl bg-slate-50 p-4">
+                <div className="text-sm font-semibold text-slate-900">
+                  Оборудование
+                </div>
+                <div className="mt-2 space-y-2">
+                  {storeEquipment.length === 0 ? (
+                    <div className="text-sm text-slate-500">
+                      Оборудование не закреплено
+                    </div>
+                  ) : (
+                    storeEquipment.map((e) => (
+                      <div
+                        key={e.id}
+                        className="flex items-center justify-between gap-3 rounded-2xl bg-white px-3 py-2.5"
+                      >
+                        <div className="text-sm text-slate-700">
+                          {e.type} • {e.serial}
+                        </div>
+                        <RowStatus text={e.status} />
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          </SectionCard>
+        </div>
+      </div>
+    </Modal>
+  );
+}
 
 function VisitModal({
   open,
@@ -1545,7 +1558,7 @@ function VisitModal({
 }) {
   if (!visit) return null;
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={onClose} className="w-4xl">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <div className="text-lg font-semibold text-slate-900">
@@ -1601,7 +1614,7 @@ function VisitModal({
           {visit.taskId ? (
             <button
               onClick={() => openTask(visit.taskId!)}
-              className="mt-3 inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white"
+              className="mt-3 inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white cursor-pointer"
             >
               Открыть связанную задачу <ArrowRight size={16} />
             </button>
@@ -1659,7 +1672,7 @@ function TaskModal({
         <SectionCard title="Связанная торговая точка">
           <button
             onClick={() => openStore(task.storeId)}
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 cursor-pointer"
           >
             Открыть карточку ТТ • {task.store}
           </button>
@@ -1682,7 +1695,7 @@ export default function CorporateSalesPlatformPrototype() {
   const [taskForm, setTaskForm] = useState<CreateTaskForm>(initialTaskForm);
   const [selectedVisitId, setSelectedVisitId] = useState<number | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
-  const [, setSelectedStoreId] = useState<number>(101);
+  const [selectedStoreId, setSelectedStoreId] = useState<number | null>(null);
   const [selectedRepId, setSelectedRepId] = useState<number>(3);
   const [selectedMmlId, setSelectedMmlId] = useState<number>(1);
   const [routePlan, setRoutePlan] = useState<RoutePlan>(initialRoutePlan);
@@ -2144,7 +2157,7 @@ export default function CorporateSalesPlatformPrototype() {
                               <td className="px-4 py-3">
                                 <button
                                   onClick={() => setSelectedStoreId(s.id)}
-                                  className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-white"
+                                  className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-white cursor-pointer"
                                 >
                                   Открыть ТТ <ArrowRight size={14} />
                                 </button>
@@ -2157,7 +2170,11 @@ export default function CorporateSalesPlatformPrototype() {
                 </TableShell>
               </SectionCard>
 
-              {/* <Store360 storeId={selectedStoreId} /> */}
+              <Store360Modal
+                open={!!selectedStoreId}
+                storeId={selectedStoreId}
+                onClose={() => setSelectedStoreId(null)}
+              />
             </div>
           </Shell>
         )}
@@ -2510,7 +2527,11 @@ export default function CorporateSalesPlatformPrototype() {
                   </table>
                 </TableShell>
               </SectionCard>
-              {/* <Store360 storeId={selectedStoreId} /> */}
+              <Store360Modal
+                open={!!selectedStoreId}
+                storeId={selectedStoreId}
+                onClose={() => setSelectedStoreId(null)}
+              />
             </div>
           </Shell>
         )}
@@ -2591,7 +2612,11 @@ export default function CorporateSalesPlatformPrototype() {
                   </table>
                 </TableShell>
               </SectionCard>
-              {/* <Store360 storeId={selectedStoreId} /> */}
+              <Store360Modal
+                open={!!selectedStoreId}
+                storeId={selectedStoreId}
+                onClose={() => setSelectedStoreId(null)}
+              />
             </div>
           </Shell>
         )}
@@ -2763,7 +2788,11 @@ export default function CorporateSalesPlatformPrototype() {
                   </table>
                 </TableShell>
               </SectionCard>
-              {/* <Store360 storeId={selectedStoreId} /> */}
+              <Store360Modal
+                open={!!selectedStoreId}
+                storeId={selectedStoreId}
+                onClose={() => setSelectedStoreId(null)}
+              />
             </div>
           </Shell>
         )}
@@ -2864,6 +2893,11 @@ export default function CorporateSalesPlatformPrototype() {
                 task={selectedTask}
                 onClose={() => setSelectedTaskId(null)}
                 openStore={openStore}
+              />
+              <Store360Modal
+                open={!!selectedStoreId}
+                storeId={selectedStoreId}
+                onClose={() => setSelectedStoreId(null)}
               />
             </div>
           </Shell>
