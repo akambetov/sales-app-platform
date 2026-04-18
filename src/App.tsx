@@ -1749,7 +1749,7 @@ export default function CorporateSalesPlatformPrototype() {
                   </div>
                 </SectionCard>
 
-                <SectionCard
+                {/* <SectionCard
                   title="Проблемные зоны супервайзера"
                   subtitle="Любой alert должен переводить в действие"
                 >
@@ -1781,7 +1781,7 @@ export default function CorporateSalesPlatformPrototype() {
                       Создать корректирующую задачу
                     </button>
                   </div>
-                </SectionCard>
+                </SectionCard> */}
               </div>
 
               <SectionCard
