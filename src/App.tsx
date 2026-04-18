@@ -658,7 +658,7 @@ const tasksSeed: Task[] = [
     rep: 'Руслан Ибраев',
     priority: 'Средний',
     status: 'В работе',
-    due: 'Сегодня 17:00',
+    due: '18.04.2026 - 17:00',
     source: 'Полка',
   },
   {
@@ -669,7 +669,7 @@ const tasksSeed: Task[] = [
     rep: 'Бекзат Сарсенов',
     priority: 'Высокий',
     status: 'Открыта',
-    due: 'Сегодня 18:00',
+    due: '18.04.2026 - 17:00',
     source: 'Полка',
   },
   {
@@ -680,7 +680,7 @@ const tasksSeed: Task[] = [
     rep: 'Азамат Утегенов',
     priority: 'Критично',
     status: 'Открыта',
-    due: 'Сегодня 16:00',
+    due: '17.04.2026 - 16:00',
     source: 'Полевое исполнение',
   },
   {
@@ -691,7 +691,7 @@ const tasksSeed: Task[] = [
     rep: 'Руслан Ибраев',
     priority: 'Критично',
     status: 'Открыта',
-    due: 'Сегодня 15:30',
+    due: '18.04.2026 - 14:00',
     source: 'Полевое исполнение',
   },
   {
@@ -702,7 +702,7 @@ const tasksSeed: Task[] = [
     rep: 'Бекзат Сарсенов',
     priority: 'Высокий',
     status: 'Открыта',
-    due: 'Завтра 12:00',
+    due: '20.04.2026 - 17:00',
     source: 'Оборудование',
   },
   {
@@ -713,7 +713,7 @@ const tasksSeed: Task[] = [
     rep: 'Руслан Ибраев',
     priority: 'Критично',
     status: 'Открыта',
-    due: 'Сегодня 17:30',
+    due: '20.04.2026 - 15:00',
     source: 'Долги',
   },
 ];
@@ -1243,7 +1243,7 @@ function formatDueDate(value: string) {
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
 
-  return `${day}.${month}.${year} ${hours}:${minutes}`;
+  return `${day}.${month}.${year} - ${hours}:${minutes}`;
 }
 
 function CreateTaskModal({
