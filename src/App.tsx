@@ -1,5 +1,6 @@
 import './App.css';
 import React, { useMemo, useState } from 'react';
+import Modal from './components/Modal';
 import {
   LayoutDashboard,
   ClipboardList,
@@ -13,9 +14,7 @@ import {
   Search,
   Bell,
   CalendarDays,
-  ChevronRight,
   Plus,
-  Filter,
   ArrowRight,
   Building2,
   MapPinned,
@@ -181,6 +180,13 @@ type CommandDistributorRow = {
   relativeDiffMtd: string;
   prevFactYtd: number;
   factYtd: number;
+};
+type CreateTaskForm = {
+  type: string;
+  repId: number;
+  storeId: number;
+  priority: 'Средний' | 'Высокий' | 'Критично';
+  due: string;
 };
 
 const reps: Rep[] = [
@@ -1135,7 +1141,15 @@ function Sidebar({
   );
 }
 
-function TopBar({ title, subtitle }: { title: string; subtitle?: string }) {
+function TopBar({
+  title,
+  subtitle,
+  onCreateTask,
+}: {
+  title: string;
+  subtitle?: string;
+  onCreateTask: () => void;
+}) {
   return (
     <div className="sticky top-0 z-10 border-b border-slate-200 bg-white/95 backdrop-blur">
       <div className="px-6 pt-5">
@@ -1181,10 +1195,13 @@ function TopBar({ title, subtitle }: { title: string; subtitle?: string }) {
             <CalendarDays size={16} />
             Сегодня
           </div>
-          <div className="cursor-pointer inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm">
-            <Filter size={16} />
-            Фильтры
-          </div>
+          <button
+            onClick={onCreateTask}
+            className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800"
+          >
+            <Plus size={16} />
+            Создать задачу
+          </button>
         </div>
       </div>
     </div>
@@ -1194,17 +1211,176 @@ function TopBar({ title, subtitle }: { title: string; subtitle?: string }) {
 function Shell({
   title,
   subtitle,
+  onCreateTask,
   children,
 }: {
   title: string;
   subtitle?: string;
+  onCreateTask: () => void;
   children: React.ReactNode;
 }) {
   return (
     <div className="min-h-screen flex-1 bg-slate-100">
-      <TopBar title={title} subtitle={subtitle} />
+      <TopBar title={title} subtitle={subtitle} onCreateTask={onCreateTask} />
       <div className="p-6">{children}</div>
     </div>
+  );
+}
+
+function formatDueDate(value: string) {
+  if (!value) return '';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  return `${day}.${month}.${year} ${hours}:${minutes}`;
+}
+
+function CreateTaskModal({
+  open,
+  onClose,
+  form,
+  onChange,
+  onSubmit,
+}: {
+  open: boolean;
+  onClose: () => void;
+  form: CreateTaskForm;
+  onChange: (next: CreateTaskForm) => void;
+  onSubmit: () => void;
+}) {
+  const repStores = stores.filter((store) => store.repId === form.repId);
+
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Создать задачу на ТП"
+      className="max-w-3xl"
+    >
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <label className="block">
+            <div className="mb-2 text-sm font-medium text-slate-700">
+              Тип задачи
+            </div>
+            <input
+              value={form.type}
+              onChange={(event) =>
+                onChange({ ...form, type: event.target.value })
+              }
+              placeholder="Например: Контроль повторного визита"
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-400"
+            />
+          </label>
+
+          <label className="block">
+            <div className="mb-2 text-sm font-medium text-slate-700">
+              Приоритет
+            </div>
+            <select
+              value={form.priority}
+              onChange={(event) =>
+                onChange({
+                  ...form,
+                  priority: event.target.value as CreateTaskForm['priority'],
+                })
+              }
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-400"
+            >
+              <option value="Средний">Средний</option>
+              <option value="Высокий">Высокий</option>
+              <option value="Критично">Критично</option>
+            </select>
+          </label>
+
+          <label className="block">
+            <div className="mb-2 text-sm font-medium text-slate-700">ТП</div>
+            <select
+              value={String(form.repId)}
+              onChange={(event) => {
+                const repId = Number(event.target.value);
+                const nextStoreId =
+                  stores.find((store) => store.repId === repId)?.id ?? 0;
+
+                onChange({
+                  ...form,
+                  repId,
+                  storeId: nextStoreId,
+                });
+              }}
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-400"
+            >
+              {reps.map((rep) => (
+                <option key={rep.id} value={rep.id}>
+                  {rep.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="block">
+            <div className="mb-2 text-sm font-medium text-slate-700">
+              Торговая точка
+            </div>
+            <select
+              value={String(form.storeId)}
+              onChange={(event) =>
+                onChange({ ...form, storeId: Number(event.target.value) })
+              }
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-400"
+            >
+              {repStores.map((store) => (
+                <option key={store.id} value={store.id}>
+                  {store.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="block md:col-span-2">
+            <div className="mb-2 text-sm font-medium text-slate-700">
+              Срок исполнения
+            </div>
+            <input
+              type="datetime-local"
+              value={form.due}
+              onChange={(event) =>
+                onChange({ ...form, due: event.target.value })
+              }
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-400"
+            />
+          </label>
+        </div>
+
+        <div className="rounded-3xl bg-slate-50 p-4 text-sm text-slate-600">
+          Новая задача будет добавлена в реестр задач супервайзера со статусом
+          `Открыта` и источником `Супервайзер`.
+        </div>
+
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+          >
+            Отмена
+          </button>
+          <button
+            onClick={onSubmit}
+            className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
+          >
+            <Plus size={16} />
+            Создать задачу
+          </button>
+        </div>
+      </div>
+    </Modal>
   );
 }
 
@@ -1497,7 +1673,16 @@ function TaskDrawer({
 }
 
 export default function CorporateSalesPlatformPrototype() {
+  const initialTaskForm: CreateTaskForm = {
+    type: '',
+    repId: reps[0].id,
+    storeId: stores.find((store) => store.repId === reps[0].id)?.id ?? 0,
+    priority: 'Высокий',
+    due: '',
+  };
   const [page, setPage] = useState<PageId>('command');
+  const [createTaskOpen, setCreateTaskOpen] = useState(false);
+  const [taskForm, setTaskForm] = useState<CreateTaskForm>(initialTaskForm);
   const [selectedVisitId, setSelectedVisitId] = useState<number | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [, setSelectedStoreId] = useState<number>(101);
@@ -1538,28 +1723,28 @@ export default function CorporateSalesPlatformPrototype() {
     [teamOrders, teamVisits, teamDebts, teamShelf, teamEquipment, tasks],
   );
 
-  const commandAlerts = [
-    {
-      title: `${kpis.visitsWithoutOrder} визита без заказа`,
-      desc: 'Часть визитов команды не конвертируется в заказ',
-      go: 'execution' as PageId,
-    },
-    {
-      title: `Дебиторская задолженность ${money(kpis.overdue)}`,
-      desc: 'Есть риск зависания денег по ТТ команды',
-      go: 'debts' as PageId,
-    },
-    // {
-    //   title: `${kpis.shelfProblems} точки с нарушением полки`,
-    //   desc: 'Нарушения MML, цен и стандартов',
-    //   go: 'shelf' as PageId,
-    // },
-    {
-      title: `63 оборудования требующие ТО`,
-      desc: 'Не найдено или требуется обслуживание',
-      go: 'equipment' as PageId,
-    },
-  ];
+  // const commandAlerts = [
+  //   {
+  //     title: `${kpis.visitsWithoutOrder} визита без заказа`,
+  //     desc: 'Часть визитов команды не конвертируется в заказ',
+  //     go: 'execution' as PageId,
+  //   },
+  //   {
+  //     title: `Дебиторская задолженность ${money(kpis.overdue)}`,
+  //     desc: 'Есть риск зависания денег по ТТ команды',
+  //     go: 'debts' as PageId,
+  //   },
+  //   // {
+  //   //   title: `${kpis.shelfProblems} точки с нарушением полки`,
+  //   //   desc: 'Нарушения MML, цен и стандартов',
+  //   //   go: 'shelf' as PageId,
+  //   // },
+  //   {
+  //     title: `63 оборудования требующие ТО`,
+  //     desc: 'Не найдено или требуется обслуживание',
+  //     go: 'equipment' as PageId,
+  //   },
+  // ];
 
   function openTask(taskId: number) {
     setSelectedTaskId(taskId);
@@ -1600,28 +1785,65 @@ export default function CorporateSalesPlatformPrototype() {
     }));
   }
 
-  function createRecoveryTaskFromAlert() {
-    const nextId = Math.max(...tasks.map((t) => t.id)) + 1;
-    setTasks((prev) => [
-      {
-        id: nextId,
-        type: 'Повторный визит по критичной ТТ',
-        storeId: 104,
-        store: 'Tulpar Trade',
-        rep: 'Руслан Ибраев',
-        priority: 'Критично',
-        status: 'Открыта',
-        due: 'Сегодня 18:30',
-        source: 'Command Center',
-      },
-      ...prev,
-    ]);
+  function openCreateTaskModal() {
+    setTaskForm(initialTaskForm);
+    setCreateTaskOpen(true);
+  }
+
+  function createSupervisorTask() {
+    const rep = reps.find((item) => item.id === taskForm.repId);
+    const store = stores.find((item) => item.id === taskForm.storeId);
+
+    if (!taskForm.type.trim() || !rep || !store || !taskForm.due) return;
+
+    const nextId = Math.max(...tasks.map((task) => task.id), 0) + 1;
+    const nextTask: Task = {
+      id: nextId,
+      type: taskForm.type.trim(),
+      storeId: store.id,
+      store: store.name,
+      rep: rep.name,
+      priority: taskForm.priority,
+      status: 'Открыта',
+      due: formatDueDate(taskForm.due),
+      source: 'Супервайзер',
+    };
+
+    setTasks((prev) => [nextTask, ...prev]);
     setSelectedTaskId(nextId);
     setPage('tasks');
+    setCreateTaskOpen(false);
   }
+
+  // function createRecoveryTaskFromAlert() {
+  //   const nextId = Math.max(...tasks.map((t) => t.id)) + 1;
+  //   setTasks((prev) => [
+  //     {
+  //       id: nextId,
+  //       type: 'Повторный визит по критичной ТТ',
+  //       storeId: 104,
+  //       store: 'Tulpar Trade',
+  //       rep: 'Руслан Ибраев',
+  //       priority: 'Критично',
+  //       status: 'Открыта',
+  //       due: 'Сегодня 18:30',
+  //       source: 'Command Center',
+  //     },
+  //     ...prev,
+  //   ]);
+  //   setSelectedTaskId(nextId);
+  //   setPage('tasks');
+  // }
 
   return (
     <div className="min-h-screen bg-slate-100">
+      <CreateTaskModal
+        open={createTaskOpen}
+        onClose={() => setCreateTaskOpen(false)}
+        form={taskForm}
+        onChange={setTaskForm}
+        onSubmit={createSupervisorTask}
+      />
       <div className="flex min-h-screen">
         <Sidebar page={page} setPage={setPage} />
 
@@ -1629,6 +1851,7 @@ export default function CorporateSalesPlatformPrototype() {
           <Shell
             title="Command Center"
             subtitle={`Система показывает только данные супервайзера ${SESSION.name}: его команда, его маршруты, его MML, его задачи и его торговые точки.`}
+            onCreateTask={openCreateTaskModal}
           >
             <div className="space-y-6">
               <div className="rounded-[32px] border border-slate-200 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800 p-6 text-white shadow-sm">
@@ -1936,6 +2159,7 @@ export default function CorporateSalesPlatformPrototype() {
           <Shell
             title="Полевое исполнение"
             subtitle="Супервайзер видит только визиты своей команды и анализирует качество исполнения каждого визита"
+            onCreateTask={openCreateTaskModal}
           >
             <div className="flex gap-6">
               <div className="flex-1 space-y-6">
@@ -2066,6 +2290,7 @@ export default function CorporateSalesPlatformPrototype() {
           <Shell
             title="Маршруты"
             subtitle="Супервайзер ставит и редактирует маршрут на каждый день рабочей недели только для закрепленных торговых представителей"
+            onCreateTask={openCreateTaskModal}
           >
             <div className="space-y-6">
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.1fr,1.15fr]">
@@ -2197,6 +2422,7 @@ export default function CorporateSalesPlatformPrototype() {
           <Shell
             title="Заказы и продажи"
             subtitle="Заказы команды супервайзера с акцентом на план, отклонения и конверсию визит → заказ"
+            onCreateTask={openCreateTaskModal}
           >
             <div className="space-y-6">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-6">
@@ -2283,6 +2509,7 @@ export default function CorporateSalesPlatformPrototype() {
           <Shell
             title="Долги"
             subtitle="Супервайзер контролирует долги только по закрепленным ТТ и может быстро провалиться до карточки точки"
+            onCreateTask={openCreateTaskModal}
           >
             <div className="space-y-6">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
@@ -2363,6 +2590,7 @@ export default function CorporateSalesPlatformPrototype() {
           <Shell
             title="Полка и стандарты"
             subtitle="MML, фокусные SKU, цены и фотоотчеты по зоне ответственности супервайзера"
+            onCreateTask={openCreateTaskModal}
           >
             <div className="space-y-6">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-6">
@@ -2453,6 +2681,7 @@ export default function CorporateSalesPlatformPrototype() {
           <Shell
             title="Оборудование"
             subtitle="Реестр холодильников, кег и другого оборудования только по точкам команды супервайзера"
+            onCreateTask={openCreateTaskModal}
           >
             <div className="space-y-6">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-5">
@@ -2533,6 +2762,7 @@ export default function CorporateSalesPlatformPrototype() {
           <Shell
             title="Задачи"
             subtitle="Центр корректирующих действий: каждая проблема должна быть привязана к ТТ, ТП и сроку исполнения"
+            onCreateTask={openCreateTaskModal}
           >
             <div className="flex gap-6">
               <div className="flex-1 space-y-6">
@@ -2632,6 +2862,7 @@ export default function CorporateSalesPlatformPrototype() {
           <Shell
             title="MML территории"
             subtitle="MML задается не глобально, а по территории и зоне ответственности. Сейчас система показывает MML-шаблоны только авторизованного супервайзера."
+            onCreateTask={openCreateTaskModal}
           >
             <div className="space-y-6">
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr,1.2fr]">
