@@ -1927,16 +1927,16 @@ export default function CorporateSalesPlatformPrototype() {
               </div>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <KpiCard
-                  title="Количество оборудований"
-                  value="119"
+                  title="Месяный План/Факт продажи"
+                  value={`${((1258750 * 100) / 2500000).toFixed(2)} %`}
                   tone="green"
-                  note="В зоне покрытия"
+                  note={`До выполнения плана ${money(2500000 - 1258750)}`}
                 />
                 <KpiCard
-                  title="Покрытие"
-                  value="128"
+                  title="Дневной План/Факт продажи"
+                  value="112%"
                   tone="red"
-                  note="Общее количество ТТ"
+                  note={`План перевыполнен на сумму ${money(78930)}`}
                 />
                 <KpiCard
                   title="Визиты без заказа"
