@@ -7,7 +7,6 @@ import {
   Route as RouteIcon,
   ShoppingCart,
   Wallet,
-  Rows3,
   Package,
   AlertCircle,
   Target,
@@ -44,7 +43,7 @@ const NAV_ITEMS = [
   { id: 'routes', label: 'Маршруты', icon: RouteIcon },
   { id: 'orders', label: 'Заказы и продажи', icon: ShoppingCart },
   { id: 'debts', label: 'Долги', icon: Wallet },
-  { id: 'shelf', label: 'Полка и стандарты', icon: Rows3 },
+  // { id: 'shelf', label: 'Полка и стандарты', icon: Rows3 },
   { id: 'equipment', label: 'Оборудование', icon: Package },
   { id: 'tasks', label: 'Задачи', icon: AlertCircle },
   { id: 'mml', label: 'MML территории', icon: Target },
@@ -103,6 +102,7 @@ type Order = {
   store: string;
   company: string;
   amount: number;
+  mml: number;
   sku: number;
   units: number;
   promo: string;
@@ -433,6 +433,7 @@ const orders: Order[] = [
     store: 'Green Line',
     company: 'Galanz',
     amount: 92000,
+    mml: 67,
     sku: 6,
     units: 52,
     promo: 'Да',
@@ -447,6 +448,7 @@ const orders: Order[] = [
     store: 'Aray Market',
     company: 'ШПЗ',
     amount: 74000,
+    mml: 87,
     sku: 4,
     units: 31,
     promo: 'Нет',
@@ -461,6 +463,7 @@ const orders: Order[] = [
     store: 'Dostar Mini',
     company: 'Шымкент Пиво',
     amount: 0,
+    mml: 0,
     sku: 0,
     units: 0,
     promo: 'Нет',
@@ -475,6 +478,7 @@ const orders: Order[] = [
     store: 'Meruyert Shop',
     company: 'ШПЗ',
     amount: 52000,
+    mml: 82,
     sku: 3,
     units: 24,
     promo: 'Да',
@@ -489,6 +493,7 @@ const orders: Order[] = [
     store: 'Nurzhol Store',
     company: 'Шымкент Пиво',
     amount: 166000,
+    mml: 93,
     sku: 8,
     units: 73,
     promo: 'Да',
@@ -2458,7 +2463,7 @@ export default function CorporateSalesPlatformPrototype() {
                 subtitle="Клик по строке раскрывает связанную торговую точку и контекст продажи"
               >
                 <TableShell>
-                  <table className="w-full min-w-[1020px] text-sm">
+                  <table className="w-full min-w-255 text-sm">
                     <thead>
                       <tr className="border-b border-slate-200 bg-slate-50 text-left text-slate-500">
                         <th className="px-4 py-3 font-medium">Дата</th>
@@ -2466,6 +2471,7 @@ export default function CorporateSalesPlatformPrototype() {
                         <th className="px-4 py-3 font-medium">ТТ</th>
                         {/* <th className="px-4 py-3 font-medium">Компания</th> */}
                         <th className="px-4 py-3 font-medium">Сумма</th>
+                        <th className="px-4 py-3 font-medium">MML</th>
                         <th className="px-4 py-3 font-medium">SKU</th>
                         <th className="px-4 py-3 font-medium">Units</th>
                         <th className="px-4 py-3 font-medium">Промо</th>
@@ -2488,6 +2494,7 @@ export default function CorporateSalesPlatformPrototype() {
                           <td className="px-4 py-3 font-semibold text-slate-900">
                             {o.amount === 0 ? 'Нет заказа' : money(o.amount)}
                           </td>
+                          <td className="px-4 py-3">{o.mml} %</td>
                           <td className="px-4 py-3">{o.sku}</td>
                           <td className="px-4 py-3">{o.units}</td>
                           <td className="px-4 py-3">{o.promo}</td>
@@ -2586,7 +2593,7 @@ export default function CorporateSalesPlatformPrototype() {
           </Shell>
         )}
 
-        {page === 'shelf' && (
+        {/* {page === 'shelf' && (
           <Shell
             title="Полка и стандарты"
             subtitle="MML, фокусные SKU, цены и фотоотчеты по зоне ответственности супервайзера"
@@ -2604,11 +2611,11 @@ export default function CorporateSalesPlatformPrototype() {
                   value={`${Math.round(teamShelf.reduce((s, r) => s + r.focus, 0) / teamShelf.length)}%`}
                   tone="amber"
                 />
-                {/* <KpiCard
-                  title="Нарушения полки"
-                  value={`${teamShelf.filter((r) => r.result === 'Проблема').length}`}
-                  tone="red"
-                /> */}
+                // <KpiCard
+                //   title="Нарушения полки"
+                //   value={`${teamShelf.filter((r) => r.result === 'Проблема').length}`}
+                //   tone="red"
+                // />
                 <KpiCard
                   title="Риск по стандарту"
                   value={`${teamShelf.filter((r) => r.result === 'Риск').length}`}
@@ -2634,7 +2641,7 @@ export default function CorporateSalesPlatformPrototype() {
                     <thead>
                       <tr className="border-b border-slate-200 bg-slate-50 text-left text-slate-500">
                         <th className="px-4 py-3 font-medium">ТТ</th>
-                        {/* <th className="px-4 py-3 font-medium">Компания</th> */}
+                        // <th className="px-4 py-3 font-medium">Компания</th>
                         <th className="px-4 py-3 font-medium">MML</th>
                         <th className="px-4 py-3 font-medium">Фокус</th>
                         <th className="px-4 py-3 font-medium">Цена</th>
@@ -2653,7 +2660,7 @@ export default function CorporateSalesPlatformPrototype() {
                           <td className="px-4 py-3 font-medium text-slate-900">
                             {r.store}
                           </td>
-                          {/* <td className="px-4 py-3">{r.company}</td> */}
+                          // {/* <td className="px-4 py-3">{r.company}</td> 
                           <td className="px-4 py-3">{r.mml}%</td>
                           <td className="px-4 py-3">{r.focus}%</td>
                           <td className="px-4 py-3">
@@ -2672,10 +2679,10 @@ export default function CorporateSalesPlatformPrototype() {
                   </table>
                 </TableShell>
               </SectionCard>
-              {/* <Store360 storeId={selectedStoreId} /> */}
+              // {/* <Store360 storeId={selectedStoreId} /> 
             </div>
           </Shell>
-        )}
+        )} */}
 
         {page === 'equipment' && (
           <Shell
