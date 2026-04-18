@@ -168,18 +168,18 @@ type MmlTemplate = {
 };
 
 type RoutePlan = Record<number, Record<(typeof WEEK_DAYS)[number], number[]>>;
-type CommandDistributorRow = {
-  manager: string;
-  planQty: number;
-  factQty: number;
-  factToPlan: string;
-  niPlanFact: string;
-  prevFactMtd: number;
-  absDiffMtd: number;
-  relativeDiffMtd: string;
-  prevFactYtd: number;
-  factYtd: number;
-};
+// type CommandDistributorRow = {
+//   manager: string;
+//   planQty: number;
+//   factQty: number;
+//   factToPlan: string;
+//   niPlanFact: string;
+//   prevFactMtd: number;
+//   absDiffMtd: number;
+//   relativeDiffMtd: string;
+//   prevFactYtd: number;
+//   factYtd: number;
+// };
 type CreateTaskForm = {
   type: string;
   repId: number;
@@ -211,6 +211,30 @@ const reps: Rep[] = [
     status: 'Активен',
   },
 ];
+
+const repsSales: Record<
+  Rep['id'],
+  { plan: number; sold: number; visitsTotal: number; visitsDone: number }
+> = {
+  3: {
+    plan: 3000000,
+    sold: 2400000,
+    visitsTotal: 12,
+    visitsDone: 9,
+  },
+  4: {
+    plan: 2500000,
+    sold: 1900000,
+    visitsTotal: 10,
+    visitsDone: 7,
+  },
+  5: {
+    plan: 2000000,
+    sold: 2250000,
+    visitsTotal: 9,
+    visitsDone: 12,
+  },
+};
 
 const stores: Store[] = [
   {
@@ -787,76 +811,76 @@ const initialRoutePlan: RoutePlan = {
   },
 };
 
-const commandDistributorRows: CommandDistributorRow[] = [
-  {
-    manager: 'Руслан Ибраев',
-    planQty: 385000,
-    factQty: 198200,
-    factToPlan: '51,48%',
-    niPlanFact: '118,8%',
-    prevFactMtd: 143400,
-    absDiffMtd: 54800,
-    relativeDiffMtd: '138,21%',
-    prevFactYtd: 480500,
-    factYtd: 590000,
-  },
-  {
-    manager: 'Бекзат Сарсенов',
-    planQty: 416000,
-    factQty: 189850,
-    factToPlan: '45,64%',
-    niPlanFact: '105,32%',
-    prevFactMtd: 109350,
-    absDiffMtd: 80500,
-    relativeDiffMtd: '173,62%',
-    prevFactYtd: 552100,
-    factYtd: 633000,
-  },
-  {
-    manager: 'Ню Виталий Олегович',
-    planQty: 447000,
-    factQty: 213700,
-    factToPlan: '47,81%',
-    niPlanFact: '110,33%',
-    prevFactMtd: 69650,
-    absDiffMtd: 144050,
-    relativeDiffMtd: '306,82%',
-    prevFactYtd: 527300,
-    factYtd: 992000,
-  },
-  {
-    manager: 'Азамат Утегенов',
-    planQty: 1252000,
-    factQty: 657000,
-    factToPlan: '52,48%',
-    niPlanFact: '121,1%',
-    prevFactMtd: 414650,
-    absDiffMtd: 242350,
-    relativeDiffMtd: '158,45%',
-    prevFactYtd: 1262750,
-    factYtd: 1599000,
-  },
-  {
-    manager: 'Итого',
-    planQty: 2500000,
-    factQty: 1258750,
-    factToPlan: '50,35%',
-    niPlanFact: '116,19%',
-    prevFactMtd: 737050,
-    absDiffMtd: 521700,
-    relativeDiffMtd: '170,78%',
-    prevFactYtd: 2822650,
-    factYtd: 3816000,
-  },
-];
+// const commandDistributorRows: CommandDistributorRow[] = [
+//   {
+//     manager: 'Руслан Ибраев',
+//     planQty: 385000,
+//     factQty: 198200,
+//     factToPlan: '51,48%',
+//     niPlanFact: '118,8%',
+//     prevFactMtd: 143400,
+//     absDiffMtd: 54800,
+//     relativeDiffMtd: '138,21%',
+//     prevFactYtd: 480500,
+//     factYtd: 590000,
+//   },
+//   {
+//     manager: 'Бекзат Сарсенов',
+//     planQty: 416000,
+//     factQty: 189850,
+//     factToPlan: '45,64%',
+//     niPlanFact: '105,32%',
+//     prevFactMtd: 109350,
+//     absDiffMtd: 80500,
+//     relativeDiffMtd: '173,62%',
+//     prevFactYtd: 552100,
+//     factYtd: 633000,
+//   },
+//   {
+//     manager: 'Ню Виталий Олегович',
+//     planQty: 447000,
+//     factQty: 213700,
+//     factToPlan: '47,81%',
+//     niPlanFact: '110,33%',
+//     prevFactMtd: 69650,
+//     absDiffMtd: 144050,
+//     relativeDiffMtd: '306,82%',
+//     prevFactYtd: 527300,
+//     factYtd: 992000,
+//   },
+//   {
+//     manager: 'Азамат Утегенов',
+//     planQty: 1252000,
+//     factQty: 657000,
+//     factToPlan: '52,48%',
+//     niPlanFact: '121,1%',
+//     prevFactMtd: 414650,
+//     absDiffMtd: 242350,
+//     relativeDiffMtd: '158,45%',
+//     prevFactYtd: 1262750,
+//     factYtd: 1599000,
+//   },
+//   {
+//     manager: 'Итого',
+//     planQty: 2500000,
+//     factQty: 1258750,
+//     factToPlan: '50,35%',
+//     niPlanFact: '116,19%',
+//     prevFactMtd: 737050,
+//     absDiffMtd: 521700,
+//     relativeDiffMtd: '170,78%',
+//     prevFactYtd: 2822650,
+//     factYtd: 3816000,
+//   },
+// ];
 
 function money(v: number) {
   return `${new Intl.NumberFormat('ru-RU').format(v)} тг`;
 }
 
-function quantity(v: number) {
-  return new Intl.NumberFormat('ru-RU').format(v);
-}
+// function quantity(v: number) {
+//   return new Intl.NumberFormat('ru-RU').format(v);
+// }
 
 function toneByText(text: string) {
   if (
@@ -1047,7 +1071,7 @@ function MiniBar({
       <div className="h-2 rounded-full bg-slate-100">
         <div
           className={cls('h-2 rounded-full', color)}
-          style={{ width: `${Math.max(6, value)}%` }}
+          style={{ width: `${Math.max(6, value > 100 ? 100 : value)}%` }}
         />
       </div>
     </div>
@@ -1976,17 +2000,17 @@ export default function CorporateSalesPlatformPrototype() {
                   <div className="space-y-5">
                     <MiniBar
                       label="Руслан Ибраев"
-                      value={79}
+                      value={(repsSales[3].sold * 100) / repsSales[3].plan}
                       color="bg-blue-500"
                     />
                     <MiniBar
                       label="Бекзат Сарсенов"
-                      value={68}
+                      value={(repsSales[4].sold * 100) / repsSales[4].plan}
                       color="bg-amber-500"
                     />
                     <MiniBar
                       label="Азамат Утегенов"
-                      value={91}
+                      value={(repsSales[5].sold * 100) / repsSales[5].plan}
                       color="bg-emerald-500"
                     />
                   </div>
@@ -2038,63 +2062,70 @@ export default function CorporateSalesPlatformPrototype() {
                         <th className="px-4 py-3 font-medium">
                           Торговый представитель
                         </th>
-                        <th className="px-4 py-3 font-medium">Кол-во план</th>
-                        <th className="px-4 py-3 font-medium">Кол-во факт</th>
-                        <th className="px-4 py-3 font-medium">План / факт</th>
-                        <th className="px-4 py-3 font-medium">НИ</th>
-                        <th className="px-4 py-3 font-medium">
-                          Кол-во факт пред.
-                        </th>
-                        <th className="px-4 py-3 font-medium">
-                          Абс. разн. MTD
-                        </th>
-                        <th className="px-4 py-3 font-medium">
-                          Отн. разн. MTD
-                        </th>
-                        <th className="px-4 py-3 font-medium">
-                          Кол-во факт год пред.
-                        </th>
-                        <th className="px-4 py-3 font-medium">
-                          Кол-во факт год
-                        </th>
+                        <th className="px-4 py-3 font-medium">План</th>
+                        <th className="px-4 py-3 font-medium">Факт</th>
+                        <th className="px-4 py-3 font-medium">%</th>
+                        <th className="px-4 py-3 font-medium">Визиты</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {commandDistributorRows.map((row) => {
-                        const isTotal = row.manager === 'Итого';
+                      {Object.entries(repsSales).map(([repId, sales]) => {
+                        const planSoldDiff = (sales.sold * 100) / sales.plan;
+
                         return (
                           <tr
-                            key={row.manager}
-                            className={
-                              isTotal
-                                ? 'border-b border-slate-200 bg-slate-100 font-semibold text-slate-900'
-                                : 'border-b border-slate-100 hover:bg-slate-50'
-                            }
+                            key={repId}
+                            className="border-b border-slate-100 hover:bg-slate-50 "
                           >
-                            <td className="px-4 py-3">{row.manager}</td>
                             <td className="px-4 py-3">
-                              {quantity(row.planQty)}
+                              {reps.find((rep) => rep.id === +repId)?.name}
+                            </td>
+                            <td className="px-4 py-3">{sales.plan}</td>
+                            <td className="px-4 py-3">{sales.plan}</td>
+                            <td
+                              className={`px-4 py-3 ${planSoldDiff < 100 ? 'text-red-600' : 'text-green-600'}`}
+                            >
+                              {planSoldDiff}%
                             </td>
                             <td className="px-4 py-3">
-                              {quantity(row.factQty)}
-                            </td>
-                            <td className="px-4 py-3">{row.factToPlan}</td>
-                            <td className="px-4 py-3">{row.niPlanFact}</td>
-                            <td className="px-4 py-3">
-                              {quantity(row.prevFactMtd)}
-                            </td>
-                            <td className="px-4 py-3">
-                              {quantity(row.absDiffMtd)}
-                            </td>
-                            <td className="px-4 py-3">{row.relativeDiffMtd}</td>
-                            <td className="px-4 py-3">
-                              {quantity(row.prevFactYtd)}
-                            </td>
-                            <td className="px-4 py-3">
-                              {quantity(row.factYtd)}
+                              {sales.visitsTotal} / {sales.visitsDone}
                             </td>
                           </tr>
                         );
+
+                        // return (
+                        //   <tr
+                        //     key={row.manager}
+                        //     className={
+                        //       isTotal
+                        //         ? 'border-b border-slate-200 bg-slate-100 font-semibold text-slate-900'
+                        //         : 'border-b border-slate-100 hover:bg-slate-50'
+                        //     }
+                        //   >
+                        //     <td className="px-4 py-3">{row.manager}</td>
+                        //     <td className="px-4 py-3">
+                        //       {quantity(row.planQty)}
+                        //     </td>
+                        //     <td className="px-4 py-3">
+                        //       {quantity(row.factQty)}
+                        //     </td>
+                        //     <td className="px-4 py-3">{row.factToPlan}</td>
+                        //     <td className="px-4 py-3">{row.niPlanFact}</td>
+                        //     <td className="px-4 py-3">
+                        //       {quantity(row.prevFactMtd)}
+                        //     </td>
+                        //     <td className="px-4 py-3">
+                        //       {quantity(row.absDiffMtd)}
+                        //     </td>
+                        //     <td className="px-4 py-3">{row.relativeDiffMtd}</td>
+                        //     <td className="px-4 py-3">
+                        //       {quantity(row.prevFactYtd)}
+                        //     </td>
+                        //     <td className="px-4 py-3">
+                        //       {quantity(row.factYtd)}
+                        //     </td>
+                        //   </tr>
+                        // );
                       })}
                     </tbody>
                   </table>
