@@ -1899,19 +1899,48 @@ export default function CorporateSalesPlatformPrototype() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                 <KpiCard
                   title="План продаж за месяц"
-                  value={money(2500000)}
+                  value={money(15000000)}
                   tone="green"
-                  note="Торговой команды"
+                  note="Торговая команда"
                 />
                 <KpiCard
                   title="Фактические продажи за месяц"
-                  value={money(1258750)}
+                  value={money(8786000)}
                   tone="red"
-                  note="Торговой команды"
+                  note="Торговая команда"
                 />
+                <KpiCard
+                  title="Месяный План/Факт продаж"
+                  value={`${((8786000 * 100) / 15000000).toFixed(2)} %`}
+                  tone="red"
+                  note={`До выполнения плана ${money(15000000 - 8786000)}`}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                <KpiCard
+                  title="План продаж за день"
+                  value={money(625000)}
+                  tone="green"
+                  note="Торговая команда"
+                />
+                <KpiCard
+                  title="Фактические продажи за день"
+                  value={money(730000)}
+                  tone="green"
+                  note="Торговая команда"
+                />
+                <KpiCard
+                  title="Дневной План/Факт продаж"
+                  value={`${((730000 * 100) / 625000).toFixed(2)} %`}
+                  tone="green"
+                  note={`План перевыполнен на сумму ${money(730000 - 625000)}`}
+                />
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                 <KpiCard
                   title="Дебиторская задолженность за месяц"
                   value={money(kpis.overdue)}
@@ -1919,35 +1948,16 @@ export default function CorporateSalesPlatformPrototype() {
                   note="Финансовый риск по зоне ответственности"
                 />
                 <KpiCard
-                  title="Оборудования требующие ТО"
-                  value="63"
-                  tone="amber"
-                  note="Требуется визит техника"
-                />
-              </div>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-                <KpiCard
-                  title="Месяный План/Факт продажи"
-                  value={`${((1258750 * 100) / 2500000).toFixed(2)} %`}
-                  tone="green"
-                  note={`До выполнения плана ${money(2500000 - 1258750)}`}
-                />
-                <KpiCard
-                  title="Дневной План/Факт продажи"
-                  value="112%"
+                  title="Просрочка по долгу"
+                  value={money(123000)}
                   tone="red"
-                  note={`План перевыполнен на сумму ${money(78930)}`}
+                  note="Требуется визит ТП"
                 />
-                <KpiCard
-                  title="Визиты без заказа"
-                  value={`${kpis.visitsWithoutOrder}`}
-                  tone="red"
-                  note="Финансовый риск по зоне ответственности"
-                />
+
                 <KpiCard
                   title="Непосещенные ТТ"
                   value={`${kpis.openTasks}`}
-                  tone="amber"
+                  tone="red"
                   note="Требуется визит ТП"
                 />
               </div>
