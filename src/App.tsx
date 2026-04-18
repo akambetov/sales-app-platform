@@ -1532,18 +1532,20 @@ function CreateTaskModal({
 //   );
 // }
 
-function VisitDrawer({
+function VisitModal({
+  open,
   visit,
   onClose,
   openTask,
 }: {
+  open: boolean;
   visit: Visit | null;
   onClose: () => void;
   openTask: (taskId: number) => void;
 }) {
   if (!visit) return null;
   return (
-    <div className="w-[430px] shrink-0 rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+    <Modal open={open} onClose={onClose}>
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <div className="text-lg font-semibold text-slate-900">
@@ -1553,12 +1555,6 @@ function VisitDrawer({
             {visit.store} • {visit.date}
           </div>
         </div>
-        <button
-          onClick={onClose}
-          className="rounded-2xl border border-slate-200 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50"
-        >
-          <X size={16} />
-        </button>
       </div>
       <div className="space-y-4">
         <SectionCard title="Основное">
@@ -1612,22 +1608,24 @@ function VisitDrawer({
           ) : null}
         </SectionCard>
       </div>
-    </div>
+    </Modal>
   );
 }
 
-function TaskDrawer({
+function TaskModal({
+  open,
   task,
   onClose,
   openStore,
 }: {
+  open: boolean;
   task: Task | null;
   onClose: () => void;
   openStore: (storeId: number) => void;
 }) {
   if (!task) return null;
   return (
-    <div className="w-[430px] shrink-0 rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+    <Modal open={open} onClose={onClose}>
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <div className="text-lg font-semibold text-slate-900">
@@ -1637,12 +1635,6 @@ function TaskDrawer({
             {task.type} • {task.store}
           </div>
         </div>
-        <button
-          onClick={onClose}
-          className="rounded-2xl border border-slate-200 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50"
-        >
-          <X size={16} />
-        </button>
       </div>
       <div className="space-y-4">
         <SectionCard title="Параметры задачи">
@@ -1673,7 +1665,7 @@ function TaskDrawer({
           </button>
         </SectionCard>
       </div>
-    </div>
+    </Modal>
   );
 }
 
@@ -1942,7 +1934,7 @@ export default function CorporateSalesPlatformPrototype() {
               </div>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                 <KpiCard
-                  title="Дебиторская задолженность за месяц"
+                  title="Дебиторская задолженность"
                   value={money(kpis.overdue)}
                   tone="red"
                   note="Финансовый риск по зоне ответственности"
@@ -2292,7 +2284,8 @@ export default function CorporateSalesPlatformPrototype() {
                   </TableShell>
                 </SectionCard>
               </div>
-              <VisitDrawer
+              <VisitModal
+                open={!!selectedVisit}
                 visit={selectedVisit}
                 onClose={() => setSelectedVisitId(null)}
                 openTask={openTask}
@@ -2830,10 +2823,10 @@ export default function CorporateSalesPlatformPrototype() {
                     <table className="w-full min-w-[1040px] text-sm">
                       <thead>
                         <tr className="border-b border-slate-200 bg-slate-50 text-left text-slate-500">
-                          <th className="px-4 py-3 font-medium">Тип</th>
+                          <th className="px-4 py-3 font-medium">Описание</th>
                           <th className="px-4 py-3 font-medium">ТТ</th>
                           <th className="px-4 py-3 font-medium">ТП</th>
-                          <th className="px-4 py-3 font-medium">Источник</th>
+                          {/* <th className="px-4 py-3 font-medium">Источник</th> */}
                           <th className="px-4 py-3 font-medium">Приоритет</th>
                           <th className="px-4 py-3 font-medium">Срок</th>
                           <th className="px-4 py-3 font-medium">Статус</th>
@@ -2851,7 +2844,7 @@ export default function CorporateSalesPlatformPrototype() {
                               {t.store}
                             </td>
                             <td className="px-4 py-3">{t.rep}</td>
-                            <td className="px-4 py-3">{t.source}</td>
+                            {/* <td className="px-4 py-3">{t.source}</td> */}
                             <td className="px-4 py-3">
                               <RowStatus text={t.priority} />
                             </td>
@@ -2866,7 +2859,8 @@ export default function CorporateSalesPlatformPrototype() {
                   </TableShell>
                 </SectionCard>
               </div>
-              <TaskDrawer
+              <TaskModal
+                open={!!selectedTask}
                 task={selectedTask}
                 onClose={() => setSelectedTaskId(null)}
                 openStore={openStore}
