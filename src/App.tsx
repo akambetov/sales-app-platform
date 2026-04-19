@@ -1248,7 +1248,7 @@ function Shell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex-1 bg-slate-100">
+    <div className="flex-1 bg-slate-100 h-screen overflow-scroll">
       <TopBar title={title} subtitle={subtitle} onCreateTask={onCreateTask} />
       <div className="p-6">{children}</div>
     </div>
