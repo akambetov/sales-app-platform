@@ -62,7 +62,7 @@ export default function Modal({
         aria-modal="true"
         aria-label={typeof title === 'string' ? title : 'Modal'}
         className={cls(
-          'relative z-10 rounded-4xl border border-slate-200 bg-white shadow-2xl',
+          'relative z-10 rounded-4xl border border-slate-200 bg-white shadow-2xl flex flex-col max-h-[90vh]',
           className,
         )}
       >
@@ -84,7 +84,7 @@ export default function Modal({
           </div>
         ) : null}
 
-        <div className="px-6 py-6">{children}</div>
+        <div className="px-6 py-6 overflow-scroll flex-1">{children}</div>
       </div>
     </div>,
     document.body,
