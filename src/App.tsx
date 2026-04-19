@@ -2081,7 +2081,7 @@ export default function CorporateSalesPlatformPrototype() {
                               {reps.find((rep) => rep.id === +repId)?.name}
                             </td>
                             <td className="px-4 py-3">{sales.plan}</td>
-                            <td className="px-4 py-3">{sales.plan}</td>
+                            <td className="px-4 py-3">{sales.sold}</td>
                             <td
                               className={`px-4 py-3 ${planSoldDiff < 100 ? 'text-red-600' : 'text-green-600'}`}
                             >
