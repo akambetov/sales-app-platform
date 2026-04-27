@@ -106,6 +106,7 @@ type Order = {
   units: number;
   promo: string;
   status: string;
+  skuDetails: Array<{ name: string; units: number }>;
 };
 type Debt = {
   id: number;
@@ -461,6 +462,14 @@ const orders: Order[] = [
     units: 52,
     promo: 'Да',
     status: 'OK',
+    skuDetails: [
+      { name: 'Qymyz Cola 1L', units: 12 },
+      { name: 'Qymyz Cola 0.5', units: 15 },
+      { name: 'Galanz Lemon 1L', units: 10 },
+      { name: 'Galanz Orange 1L', units: 8 },
+      { name: 'Galanz Lime 1L', units: 5 },
+      { name: 'Galanz Grape 1L', units: 2 },
+    ],
   },
   {
     id: 12,
@@ -476,6 +485,12 @@ const orders: Order[] = [
     units: 31,
     promo: 'Нет',
     status: 'Ниже среднего',
+    skuDetails: [
+      { name: 'Shymkent Premium 0.5', units: 10 },
+      { name: 'Shymkent Draft 30L', units: 8 },
+      { name: 'Wolf Forest 0.45', units: 7 },
+      { name: 'Capital Black 0.25', units: 6 },
+    ],
   },
   {
     id: 13,
@@ -491,6 +506,7 @@ const orders: Order[] = [
     units: 0,
     promo: 'Нет',
     status: 'Без заказа',
+    skuDetails: [],
   },
   {
     id: 14,
@@ -506,6 +522,11 @@ const orders: Order[] = [
     units: 24,
     promo: 'Да',
     status: 'OK',
+    skuDetails: [
+      { name: 'Shymkent Premium 0.5', units: 12 },
+      { name: 'Wolf Forest 0.45', units: 8 },
+      { name: 'Capital Black 0.25', units: 4 },
+    ],
   },
   {
     id: 15,
@@ -521,6 +542,16 @@ const orders: Order[] = [
     units: 73,
     promo: 'Да',
     status: 'OK',
+    skuDetails: [
+      { name: 'Shymkent Premium 0.5', units: 15 },
+      { name: 'Shymkent Draft 30L', units: 12 },
+      { name: 'Wolf Forest 0.45', units: 10 },
+      { name: 'Capital Black 0.25', units: 8 },
+      { name: 'Gold Reserve 0.5', units: 7 },
+      { name: 'Silver Light 0.33', units: 6 },
+      { name: 'Bronze Classic 0.25', units: 8 },
+      { name: 'Platinum Premium 0.75', units: 7 },
+    ],
   },
 ];
 
@@ -1425,8 +1456,10 @@ function Store360Modal({
   const rep = reps.find((r) => r.id === store.repId);
   const storeVisits = visits.filter((v) => v.storeId === store.id);
   const storeDebt = debts.find((d) => d.storeId === store.id);
-  const storeShelf = shelfRows.find((s) => s.storeId === store.id);
+  const storeOrders = orders.filter((o) => o.storeId === store.id);
   const storeEquipment = equipmentRows.filter((e) => e.storeId === store.id);
+  const activeOrder = storeOrders[0];
+
   return (
     <Modal open={open} onClose={onClose}>
       <div className="space-y-4">
@@ -1460,7 +1493,7 @@ function Store360Modal({
           </div>
         </SectionCard>
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-          <SectionCard title="Последние визиты">
+          <SectionCard title="">
             <div className="space-y-3">
               {storeVisits.map((v) => (
                 <div key={v.id} className="rounded-2xl bg-slate-50 p-4">
@@ -1492,41 +1525,6 @@ function Store360Modal({
                   </div>
                 </div>
               ))}
-            </div>
-          </SectionCard>
-          <SectionCard title="Полка, долг и оборудование">
-            <div className="space-y-3">
-              <div className="rounded-2xl bg-slate-50 p-4">
-                <div className="text-sm font-semibold text-slate-900">
-                  Полка и стандарты
-                </div>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <Badge
-                    text={`MML ${storeShelf ? storeShelf.mml : 0}%`}
-                    tone={storeShelf && storeShelf.mml < 80 ? 'red' : 'green'}
-                  />
-                  <Badge
-                    text={`Фокус ${storeShelf ? storeShelf.focus : 0}%`}
-                    tone={
-                      storeShelf && storeShelf.focus < 70 ? 'amber' : 'green'
-                    }
-                  />
-                  <Badge
-                    text={storeShelf ? storeShelf.standard : 'OK'}
-                    tone={
-                      storeShelf && storeShelf.standard === 'OK'
-                        ? 'green'
-                        : 'red'
-                    }
-                  />
-                  <Badge
-                    text={`Фото: ${storeShelf ? storeShelf.photo : 'Нет'}`}
-                    tone={
-                      storeShelf && storeShelf.photo === 'Нет' ? 'red' : 'blue'
-                    }
-                  />
-                </div>
-              </div>
               <div className="rounded-2xl bg-slate-50 p-4">
                 <div className="text-sm font-semibold text-slate-900">
                   Дебиторка
@@ -1561,6 +1559,43 @@ function Store360Modal({
                   )}
                 </div>
               </div>
+            </div>
+          </SectionCard>
+          <SectionCard title="">
+            <div className="space-y-3">
+              {/* {activeOrder && activeOrder.units > 0 ? ( */}
+              <>
+                <div className="rounded-2xl bg-slate-50 p-4">
+                  <div className="text-sm font-semibold text-slate-900">
+                    SKU: {activeOrder.skuDetails.length} <br /> Всего единиц:{' '}
+                    {activeOrder.units}
+                  </div>
+                </div>
+                {activeOrder.skuDetails.length ? (
+                  <TableShell>
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-slate-200 bg-slate-50 text-left text-slate-500">
+                          <th className="px-4 py-3 font-medium">SKU</th>
+                          <th className="px-4 py-3 font-medium">Единиц</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {activeOrder.skuDetails.map((item, idx) => (
+                          <tr key={idx} className="border-b border-slate-100">
+                            <td className="px-4 py-3 text-slate-900">
+                              {item.name}
+                            </td>
+                            <td className="px-4 py-3 font-semibold text-slate-900">
+                              {item.units}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </TableShell>
+                ) : null}
+              </>
             </div>
           </SectionCard>
         </div>
