@@ -1,8 +1,11 @@
+import 'leaflet/dist/leaflet.css';
 import './App.css';
-import React, { useMemo, useState } from 'react';
+import L, { type LatLngExpression } from 'leaflet';
+import React, { useEffect, useRef, useState } from 'react';
 import Modal from './components/Modal';
 import {
   LayoutDashboard,
+  Map as MapIcon,
   ClipboardList,
   Route as RouteIcon,
   ShoppingCart,
@@ -38,6 +41,7 @@ const SESSION = {
 
 const NAV_ITEMS = [
   { id: 'command', label: 'Command Center', icon: LayoutDashboard },
+  { id: 'coverage', label: 'Покрытие', icon: MapIcon },
   { id: 'execution', label: 'Полевое исполнение', icon: ClipboardList },
   { id: 'routes', label: 'Маршруты', icon: RouteIcon },
   { id: 'orders', label: 'Заказы и продажи', icon: ShoppingCart },
@@ -335,6 +339,76 @@ const stores: Store[] = [
     address: 'г. Шымкент, пр. Кунаева 20',
   },
 ];
+
+type CoveragePoint = {
+  storeId: number;
+  position: LatLngExpression;
+};
+type CoverageRepFilter = 'all' | number;
+
+const coveragePoints: CoveragePoint[] = [
+  { storeId: 101, position: [42.3336, 69.5895] },
+  { storeId: 104, position: [42.3214, 69.5992] },
+  { storeId: 102, position: [42.3467, 69.6288] },
+  { storeId: 105, position: [42.3318, 69.6426] },
+  { storeId: 103, position: [42.3039, 69.6147] },
+  { storeId: 106, position: [42.3088, 69.6505] },
+];
+
+const repZoneStyles: Record<
+  number,
+  {
+    fill: string;
+    stroke: string;
+    bg: string;
+    text: string;
+    ring: string;
+    zonePath: LatLngExpression[];
+  }
+> = {
+  3: {
+    fill: 'rgba(59, 130, 246, 0.18)',
+    stroke: '#2563eb',
+    bg: 'bg-blue-600',
+    text: 'text-blue-700',
+    ring: 'ring-blue-200',
+    zonePath: [
+      [42.3445, 69.5738],
+      [42.3424, 69.6052],
+      [42.3147, 69.6108],
+      [42.3088, 69.5921],
+      [42.3297, 69.5705],
+    ],
+  },
+  4: {
+    fill: 'rgba(245, 158, 11, 0.2)',
+    stroke: '#d97706',
+    bg: 'bg-amber-500',
+    text: 'text-amber-700',
+    ring: 'ring-amber-200',
+    zonePath: [
+      [42.3591, 69.6154],
+      [42.3538, 69.6603],
+      [42.3268, 69.6624],
+      [42.3157, 69.637],
+      [42.3379, 69.613],
+    ],
+  },
+  5: {
+    fill: 'rgba(16, 185, 129, 0.2)',
+    stroke: '#059669',
+    bg: 'bg-emerald-600',
+    text: 'text-emerald-700',
+    ring: 'ring-emerald-200',
+    zonePath: [
+      [42.3211, 69.5998],
+      [42.3188, 69.655],
+      [42.294, 69.667],
+      [42.2855, 69.6224],
+      [42.3018, 69.5924],
+    ],
+  },
+};
 
 const visits: Visit[] = [
   {
@@ -913,7 +987,9 @@ function money(v: number) {
 //   return new Intl.NumberFormat('ru-RU').format(v);
 // }
 
-function toneByText(text: string) {
+type BadgeTone = 'red' | 'green' | 'amber' | 'blue' | 'slate';
+
+function toneByText(text: string): BadgeTone {
   if (
     ['Проблема', 'Просрочка', 'Не найдено', 'Критично', 'Нарушение'].includes(
       text,
@@ -943,13 +1019,7 @@ function cls(...arr: Array<string | false | null | undefined>) {
   return arr.filter(Boolean).join(' ');
 }
 
-function Badge({
-  text,
-  tone = 'slate',
-}: {
-  text: string;
-  tone?: 'red' | 'green' | 'amber' | 'blue' | 'slate';
-}) {
+function Badge({ text, tone = 'slate' }: { text: string; tone?: BadgeTone }) {
   const map = {
     red: 'bg-red-100 text-red-700 border-red-200',
     green: 'bg-emerald-100 text-emerald-700 border-emerald-200',
@@ -970,7 +1040,7 @@ function Badge({
 }
 
 function RowStatus({ text }: { text: string }) {
-  return <Badge text={text} tone={toneByText(text) as any} />;
+  return <Badge text={text} tone={toneByText(text)} />;
 }
 
 function KpiCard({
@@ -1130,7 +1200,7 @@ function FilterPill({
     <button
       onClick={onClick}
       className={cls(
-        'rounded-full px-3 py-2 text-xs font-semibold transition',
+        'rounded-full px-3 py-2 text-xs font-semibold transition cursor-pointer',
         active
           ? 'bg-slate-900 text-white'
           : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
@@ -1282,6 +1352,128 @@ function Shell({
     <div className="flex-1 bg-slate-100 h-screen overflow-scroll">
       <TopBar title={title} subtitle={subtitle} onCreateTask={onCreateTask} />
       <div className="p-6">{children}</div>
+    </div>
+  );
+}
+
+function CoverageMap({
+  teamStores,
+  visibleReps,
+  onOpenStore,
+}: {
+  teamStores: Store[];
+  visibleReps: Rep[];
+  onOpenStore: (storeId: number) => void;
+}) {
+  const mapRef = useRef<HTMLDivElement | null>(null);
+  const points = coveragePoints
+    .map((point) => {
+      const store = teamStores.find((item) => item.id === point.storeId);
+      const rep = store ? reps.find((item) => item.id === store.repId) : null;
+
+      return store && rep ? { ...point, store, rep } : null;
+    })
+    .filter(Boolean) as Array<CoveragePoint & { store: Store; rep: Rep }>;
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    const map = L.map(mapRef.current, {
+      zoomControl: false,
+      scrollWheelZoom: true,
+    }); //.setView([42.323, 69.62], 13);
+
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
+
+    visibleReps.forEach((rep) => {
+      const style = repZoneStyles[rep.id];
+
+      L.polygon(style.zonePath, {
+        color: style.stroke,
+        fillColor: style.stroke,
+        fillOpacity: 0.16,
+        opacity: 0.85,
+        weight: 2,
+        dashArray: '6 5',
+      })
+        .bindTooltip(rep.name, {
+          direction: 'center',
+          permanent: true,
+          className: 'coverage-zone-tooltip',
+        })
+        .addTo(map);
+    });
+
+    points.forEach(({ position, store, rep }) => {
+      const style = repZoneStyles[rep.id];
+      const marker = L.marker(position, {
+        icon: L.divIcon({
+          className: '',
+          html: `<span class="coverage-marker ${style.bg}"></span>`,
+          iconSize: [18, 18],
+          iconAnchor: [9, 9],
+        }),
+      });
+
+      marker
+        .bindTooltip(
+          `<strong>${store.name}</strong><br/><span>${rep.name}</span>`,
+          {
+            direction: 'top',
+            offset: [0, -10],
+            className: 'coverage-store-tooltip',
+          },
+        )
+        .on('click', () => onOpenStore(store.id))
+        .addTo(map);
+    });
+
+    const bounds = L.latLngBounds([
+      ...points.map((point) => point.position),
+      ...visibleReps.flatMap((rep) => repZoneStyles[rep.id].zonePath),
+    ]);
+    map.fitBounds(bounds, { padding: [34, 34] });
+
+    // setTimeout(() => map.invalidateSize(), 0);
+
+    return () => {
+      map.remove();
+    };
+  }, [onOpenStore, points, visibleReps]);
+
+  return (
+    <div className="relative min-h-[620px] overflow-hidden rounded-[28px] border border-slate-200 bg-slate-100 shadow-sm">
+      <div ref={mapRef} className="absolute inset-0 z-0" />
+      <div className="absolute left-5 top-5 z-[1] rounded-2xl border border-white/80 bg-white/90 p-4 shadow-sm backdrop-blur">
+        <div className="text-xs font-medium uppercase tracking-wide text-slate-500">
+          Карта покрытия
+        </div>
+        <div className="mt-1 text-lg font-semibold text-slate-950">
+          {SESSION.region}
+        </div>
+        <div className="mt-3 grid grid-cols-1 gap-2">
+          {visibleReps.map((rep) => {
+            const style = repZoneStyles[rep.id];
+            const storeCount = teamStores.filter(
+              (store) => store.repId === rep.id,
+            ).length;
+
+            return (
+              <div key={rep.id} className="flex items-center gap-2 text-xs">
+                <span className={cls('h-3 w-3 rounded-full', style.bg)} />
+                <span className="font-medium text-slate-800">{rep.name}</span>
+                <span className="text-slate-500">{storeCount} ТТ</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
@@ -1756,6 +1948,8 @@ export default function CorporateSalesPlatformPrototype() {
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [selectedStoreId, setSelectedStoreId] = useState<number | null>(null);
   const [selectedRepId, setSelectedRepId] = useState<number>(3);
+  const [selectedCoverageRepId, setSelectedCoverageRepId] =
+    useState<CoverageRepFilter>('all');
   const [selectedMmlId, setSelectedMmlId] = useState<number>(1);
   const [routePlan, setRoutePlan] = useState<RoutePlan>(initialRoutePlan);
   const [tasks, setTasks] = useState<Task[]>(tasksSeed);
@@ -1778,19 +1972,24 @@ export default function CorporateSalesPlatformPrototype() {
   const teamEquipment = equipmentRows.filter((e) =>
     teamStores.some((s) => s.id === e.storeId),
   );
+  const coverageStores =
+    selectedCoverageRepId === 'all'
+      ? teamStores
+      : teamStores.filter((store) => store.repId === selectedCoverageRepId);
+  const coverageReps =
+    selectedCoverageRepId === 'all'
+      ? reps
+      : reps.filter((rep) => rep.id === selectedCoverageRepId);
 
-  const kpis = useMemo(
-    () => ({
-      sales: teamOrders.reduce((sum, o) => sum + o.amount, 0),
-      visitsWithoutOrder: teamVisits.filter((v) => !v.orderExists).length,
-      overdue: teamDebts.reduce((sum, d) => sum + d.overdue, 0),
-      openTasks: tasks.filter((t) => t.status !== 'Закрыта').length,
-      shelfProblems: teamShelf.filter((s) => s.result === 'Проблема').length,
-      equipmentProblems: teamEquipment.filter((e) => e.status !== 'Исправно')
-        .length,
-    }),
-    [teamOrders, teamVisits, teamDebts, teamShelf, teamEquipment, tasks],
-  );
+  const kpis = {
+    sales: teamOrders.reduce((sum, o) => sum + o.amount, 0),
+    visitsWithoutOrder: teamVisits.filter((v) => !v.orderExists).length,
+    overdue: teamDebts.reduce((sum, d) => sum + d.overdue, 0),
+    openTasks: tasks.filter((t) => t.status !== 'Закрыта').length,
+    shelfProblems: teamShelf.filter((s) => s.result === 'Проблема').length,
+    equipmentProblems: teamEquipment.filter((e) => e.status !== 'Исправно')
+      .length,
+  };
 
   // const commandAlerts = [
   //   {
@@ -2231,6 +2430,275 @@ export default function CorporateSalesPlatformPrototype() {
                             </tr>
                           );
                         })}
+                    </tbody>
+                  </table>
+                </TableShell>
+              </SectionCard>
+
+              <Store360Modal
+                open={!!selectedStoreId}
+                storeId={selectedStoreId}
+                onClose={() => setSelectedStoreId(null)}
+              />
+            </div>
+          </Shell>
+        )}
+
+        {page === 'coverage' && (
+          <Shell
+            title="Покрытие"
+            subtitle="Карта торговых точек команды: зоны окрашены по закрепленному торговому представителю."
+            onCreateTask={openCreateTaskModal}
+          >
+            <div className="space-y-6">
+              <SectionCard
+                title="Фильтр по торговым представителям"
+                subtitle="Фильтр меняет карту, зоны, KPI, проблемные точки и реестр покрытия"
+              >
+                <div className="flex flex-wrap gap-2">
+                  <FilterPill
+                    active={selectedCoverageRepId === 'all'}
+                    onClick={() => setSelectedCoverageRepId('all')}
+                  >
+                    Все ТП
+                  </FilterPill>
+                  {reps.map((rep) => {
+                    const style = repZoneStyles[rep.id];
+
+                    return (
+                      <button
+                        key={rep.id}
+                        onClick={() => setSelectedCoverageRepId(rep.id)}
+                        className={cls(
+                          'inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-semibold transition cursor-pointer',
+                          selectedCoverageRepId === rep.id
+                            ? 'bg-slate-900 text-white'
+                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
+                        )}
+                      >
+                        <span
+                          className={cls('h-2.5 w-2.5 rounded-full', style.bg)}
+                        />
+                        {rep.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </SectionCard>
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <KpiCard
+                  title="Точек в зоне"
+                  value={`${coverageStores.length}`}
+                  tone="blue"
+                  note="Закреплены за командой"
+                />
+                <KpiCard
+                  title="Торговых представителей"
+                  value={`${coverageReps.length}`}
+                  tone="green"
+                  note={SESSION.teamName}
+                />
+                <KpiCard
+                  title="ТТ с риском"
+                  value={`${coverageStores.filter((store) => store.mml < 70 || store.debt > 0 || store.lastOrder === 0).length}`}
+                  tone="red"
+                  note="MML, долг или нет заказа"
+                />
+                <KpiCard
+                  title="Среднее покрытие MML"
+                  value={`${Math.round(coverageStores.reduce((sum, store) => sum + store.mml, 0) / Math.max(coverageStores.length, 1))}%`}
+                  tone="amber"
+                  note="По закрепленным ТТ"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr,360px]">
+                <CoverageMap
+                  teamStores={coverageStores}
+                  visibleReps={coverageReps}
+                  onOpenStore={setSelectedStoreId}
+                />
+
+                <div className="space-y-4">
+                  <SectionCard
+                    title="Зоны торговых представителей"
+                    subtitle="Цвет зоны показывает, за кем закреплена группа точек"
+                  >
+                    <div className="space-y-3">
+                      {coverageReps.map((rep) => {
+                        const style = repZoneStyles[rep.id];
+                        const repStores = coverageStores.filter(
+                          (store) => store.repId === rep.id,
+                        );
+                        const repSales = repStores.reduce(
+                          (sum, store) => sum + store.lastOrder,
+                          0,
+                        );
+
+                        return (
+                          <button
+                            key={rep.id}
+                            // onClick={() =>
+                            //   repStores[0]
+                            //     ? setSelectedStoreId(repStores[0].id)
+                            //     : undefined
+                            // }
+                            className="w-full rounded-2xl border border-slate-200 bg-slate-50 p-4 text-left transition hover:bg-white hover:shadow-sm"
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span
+                                    className={cls(
+                                      'h-3 w-3 rounded-full',
+                                      style.bg,
+                                    )}
+                                  />
+                                  <div className="text-sm font-semibold text-slate-900">
+                                    {rep.name}
+                                  </div>
+                                </div>
+                                <div className="mt-1 text-xs text-slate-500">
+                                  {rep.company} • {repStores.length} ТТ
+                                </div>
+                              </div>
+                              <Badge text={rep.status} tone="green" />
+                            </div>
+                            <div className="mt-4 grid grid-cols-2 gap-3">
+                              <Line label="Продажи" value={money(repSales)} />
+                              <Line
+                                label="Средний MML"
+                                value={`${Math.round(repStores.reduce((sum, store) => sum + store.mml, 0) / Math.max(repStores.length, 1))}%`}
+                                danger={
+                                  Math.round(
+                                    repStores.reduce(
+                                      (sum, store) => sum + store.mml,
+                                      0,
+                                    ) / Math.max(repStores.length, 1),
+                                  ) < 75
+                                }
+                              />
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </SectionCard>
+
+                  <SectionCard
+                    title="Точки с отклонениями"
+                    subtitle="Клик открывает карточку торговой точки"
+                  >
+                    <div className="space-y-2">
+                      {coverageStores
+                        .filter(
+                          (store) =>
+                            store.debt > 0 ||
+                            store.mml < 75 ||
+                            store.lastOrder === 0,
+                        )
+                        .map((store) => {
+                          const rep = reps.find(
+                            (item) => item.id === store.repId,
+                          );
+
+                          return (
+                            <button
+                              key={store.id}
+                              onClick={() => setSelectedStoreId(store.id)}
+                              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left transition hover:bg-slate-50"
+                            >
+                              <div className="flex items-start justify-between gap-3">
+                                <div>
+                                  <div className="text-sm font-semibold text-slate-900">
+                                    {store.name}
+                                  </div>
+                                  <div className="mt-1 text-xs text-slate-500">
+                                    {rep?.name ?? 'ТП не назначен'} •{' '}
+                                    {store.channel}
+                                  </div>
+                                </div>
+                                <RowStatus
+                                  text={
+                                    store.debt > 0
+                                      ? 'Просрочка'
+                                      : store.lastOrder === 0
+                                        ? 'Проблема'
+                                        : 'Риск'
+                                  }
+                                />
+                              </div>
+                            </button>
+                          );
+                        })}
+                    </div>
+                  </SectionCard>
+                </div>
+              </div>
+
+              <SectionCard
+                title="Реестр покрытия"
+                subtitle="Список закрепления торговых точек за торговыми представителями"
+              >
+                <TableShell>
+                  <table className="w-full min-w-[980px] text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200 bg-slate-50 text-left text-slate-500">
+                        <th className="px-4 py-3 font-medium">ТТ</th>
+                        <th className="px-4 py-3 font-medium">Адрес</th>
+                        <th className="px-4 py-3 font-medium">Канал</th>
+                        <th className="px-4 py-3 font-medium">ТП</th>
+                        <th className="px-4 py-3 font-medium">MML</th>
+                        <th className="px-4 py-3 font-medium">Долг</th>
+                        <th className="px-4 py-3 font-medium">
+                          Последний заказ
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {coverageStores.map((store) => {
+                        const rep = reps.find(
+                          (item) => item.id === store.repId,
+                        );
+                        const style = rep ? repZoneStyles[rep.id] : null;
+
+                        return (
+                          <tr
+                            key={store.id}
+                            className="cursor-pointer border-b border-slate-100 hover:bg-slate-50"
+                            onClick={() => setSelectedStoreId(store.id)}
+                          >
+                            <td className="px-4 py-3 font-medium text-slate-900">
+                              {store.name}
+                            </td>
+                            <td className="px-4 py-3 text-slate-600">
+                              {store.address}
+                            </td>
+                            <td className="px-4 py-3">{store.channel}</td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-2">
+                                {style ? (
+                                  <span
+                                    className={cls(
+                                      'h-2.5 w-2.5 rounded-full',
+                                      style.bg,
+                                    )}
+                                  />
+                                ) : null}
+                                {rep?.name ?? '—'}
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">{store.mml}%</td>
+                            <td className="px-4 py-3">{money(store.debt)}</td>
+                            <td className="px-4 py-3">
+                              {store.lastOrder === 0
+                                ? 'Нет заказа'
+                                : money(store.lastOrder)}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </TableShell>
